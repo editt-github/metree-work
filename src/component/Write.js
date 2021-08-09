@@ -4,13 +4,17 @@ import '@toast-ui/editor/dist/toastui-editor.css';
 import firebase from '../firebase';
 import { Editor } from '@toast-ui/react-editor';
 import { Button, Form, Input, Radio, Select, DatePicker, Checkbox } from 'antd';
+import { getFormatDate } from './CommonFunc'
 import uuid from "react-uuid";
 import moment from 'moment';
+import { useSelector } from "react-redux";
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 function Write() {
+  const userInfo = useSelector((state) => state.user.currentUser);
   const editorRef = React.useRef();
+  const btnToList = React.useRef();
 
   const [Type, setType] = useState("1")
   const onTypeChange = (e) => {
@@ -18,18 +22,34 @@ function Write() {
     setType(type);
   }
 
+
   const onsubmit = (values) => {
-    console.log(values);
-    return;
+    let d_regis = getFormatDate(new Date());
+    if(values.project_date){
+      let date = [];
+      date.push(getFormatDate(values.project_date[0]._d));
+      date.push(getFormatDate(values.project_date[1]._d));
+      values.project_date = date;
+    } 
     const uid = uuid();
     const getEditor = editorRef.current.getInstance();
     const getHtml = getEditor.getHTML();
-    console.log(getHtml)
+    values.emergency = values.emergency ? true : false;
+    values.type = Type; 
+    const time = new Date().getTime();
     firebase.database().ref(`work_list/${uid}`)
     .set({
       ...values,
-      content:getHtml
+      content:getHtml,
+      d_regis:d_regis,
+      state:"0",
+      uid:uid,
+      name:userInfo.displayName,
+      part:userInfo.photoURL,
+      timestamp:time,
+      user_uid:userInfo.uid
     })
+    btnToList.current && btnToList.current.click();
   }
   return (
     <>
@@ -103,7 +123,7 @@ function Write() {
         />
         <div className="flex-box j-center" style={{margin:"20px 0"}}>
           <Button style={{marginRight:"5px"}}>
-            <Link to="/">목록으로</Link>
+            <Link ref={btnToList} to="/">목록으로</Link>
           </Button>
           <Button type="primary" htmlType="submit">확인</Button>
         </div>

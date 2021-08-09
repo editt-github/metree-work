@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import Main from "./component/Main";
 import Write from "./component/Write";
+import View from "./component/View";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -101,9 +102,9 @@ function App() {
                 </>
               )}
             </div>
-            <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
+            {/* <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
               <Menu.Item key="1">nav 1</Menu.Item>
-            </Menu>
+            </Menu> */}
           </div>
         </Header> 
         <Content className="content-box layout">
@@ -111,9 +112,9 @@ function App() {
             <Route exact path="/" component={Main} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/write" component={Write} />
+            <Route exact path="/view/:uid" component={View} />
           </Switch>
         </Content>
-        
       </Layout>
     </>
   );

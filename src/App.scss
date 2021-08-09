@@ -111,8 +111,11 @@ h3.title {
   }
 }
 
-.ant-layout-header{
+select{
+  border-color: $bd-color;height: 32px;
 }
+
+
 .nav-top-box{padding: 15px;display: inline-block;width: 230px;}
 .ant-layout-sider-collapsed{
   .nav-top-box{display: none;}
@@ -337,6 +340,18 @@ h3.title {
   select{border:1px solid $bd-color;height: 30px;flex:1}
   @include mobile(){
     top:170px !important;
+  }
+}
+
+
+// 로그리스트 
+.state-txt0{font-weight: 700; color: rgb(43, 63, 173);}
+.state-txt1{font-weight: 700; color: rgb(236, 59, 59);}
+.state-txt2{font-weight: 700; color: #a1a1a1;}
+.log-list{
+  li{
+    >div{margin-right: 10px;
+    }
   }
 }
 
