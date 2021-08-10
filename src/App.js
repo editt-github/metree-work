@@ -14,6 +14,7 @@ import {
 } from '@ant-design/icons';
 import Main from "./component/Main";
 import Write from "./component/Write";
+import Modify from "./component/Modify";
 import View from "./component/View";
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -112,6 +113,7 @@ function App() {
             <Route exact path="/" component={Main} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/write" component={Write} />
+            <Route exact path="/modify/:uid" component={Modify} />
             <Route exact path="/view/:uid" component={View} />
           </Switch>
         </Content>

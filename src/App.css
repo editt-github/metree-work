@@ -547,6 +547,10 @@ select {
   .call_modify {
     top: 170px !important; } }
 
+.state-txt9 {
+  font-weight: 700;
+  color: #111; }
+
 .state-txt0 {
   font-weight: 700;
   color: #2b3fad; }

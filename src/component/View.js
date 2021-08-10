@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import firebase from '../firebase';
 import { useRouteMatch, Link } from "react-router-dom";
 import { Descriptions, Button, Input } from 'antd';
@@ -52,10 +52,22 @@ export const OderModalPopup = styled.div`
 
 function View() {
   const userInfo = useSelector((state) => state.user.currentUser);
-  const  match = useRouteMatch("/view/:uid");
+  const btnToList = useRef();
+  const btnToModify = useRef();
+  const [UserDb, setUserDb] = useState();  
+  const match = useRouteMatch("/view/:uid");
   const [ViewData, setViewData] = useState();
-  const [Rerender, setRerender] = useState(false)
+  const [Rerender, setRerender] = useState(false);
   useEffect(() => {
+    if(userInfo){
+      firebase
+      .database()
+      .ref("users")
+      .child(userInfo.uid)
+      .once("value", (snapshot) => {
+        setUserDb(snapshot.val());
+      });
+    }
     
     firebase.database().ref(`work_list/${match.params.uid}`)
     .once("value")
@@ -107,6 +119,19 @@ function View() {
   }
   const onCloseStatePop = () => {
     setStatePop(false);
+  }
+
+  const onDelete = () => {
+    const agree = window.confirm("삭제시 복구가 불가능합니다. 삭제하시겠습니까?");
+    if(agree){
+      firebase.database().ref(`work_list/${match.params.uid}`).remove()
+      window.alert("삭제되었습니다.")
+      btnToList.current && btnToList.current.click();
+    }
+  }
+
+  const onModify = () => {
+    btnToModify.current && btnToModify.current.click();
   }
   return (
     <>
@@ -187,6 +212,7 @@ function View() {
                       <li className="flex-box" key={idx}>
                         <div>
                           {
+                            el.state === "9" ? (<span className="state-txt9">수정</span>) :
                             el.state === "0" ? (<span className="state-txt0">대기</span>) :
                             el.state === "1" ? (<span className="state-txt1">진행</span>) :
                             el.state === "2" ? (<span className="state-txt2">완료</span>) : ''
@@ -205,12 +231,21 @@ function View() {
             </Descriptions.Item>
           </Descriptions>
           <div className="flex-box j-center" style={{margin:"20px 0"}}>
-            {
-              
-            }
             <Button style={{marginRight:"5px"}}>
-              <Link to="/">목록으로</Link>
+              <Link ref={btnToList} to="/">목록으로</Link>
             </Button>
+            {
+              ViewData.user_uid === userInfo.uid &&
+              <Button onClick={onModify} style={{marginRight:"5px"}}>
+                <Link ref={btnToModify} to={`/modify/${match.params.uid}`}>수정</Link>
+              </Button>
+            }
+            {
+              UserDb && UserDb.role > 2 &&
+              <Button onClick={onDelete} style={{marginRight:"5px"}}>
+                삭제
+              </Button>
+            }
           </div>
       </>
       }
