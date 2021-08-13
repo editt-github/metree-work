@@ -16,40 +16,51 @@ function Modify() {
   const userInfo = useSelector((state) => state.user.currentUser);
   const editorRef = React.useRef();
   const btnToView = React.useRef();
-
   const [Type, setType] = useState()
-  const onTypeChange = (e) => {
-    const type = e.target.value;
-    setType(type);
-  }
 
   const [ViewData, setViewData] = useState();
   useEffect(() => {
     firebase.database().ref(`work_list/${match.params.uid}`)
     .once("value")
     .then(snapshot => {
-      console.log(snapshot.val())
       setViewData(snapshot.val())
+      setType(snapshot.val().type)
     })
     return () => {
     }
   }, [])
 
+  const onTypeChange = (e) => {
+    const type = e.target.value;
+    setType(type);
+  }  
+  
+  const [DatePic, setDatePic] = useState()
+  const onDatePicker = (e) => {
+    setDatePic(e)
+  }
+
   const onsubmit = (values) => {
+    
     if(values.project_date){
       let date = [];
       date.push(getFormatDate(values.project_date[0]._d));
       date.push(getFormatDate(values.project_date[1]._d));
       values.project_date = date;
     }else{
-      values.project_date = ViewData.project_date
+      values.project_date = ViewData.project_date ? ViewData.project_date : null
     } 
     const getEditor = editorRef.current.getInstance();
     const getHtml = getEditor.getHTML();
     values.title === "" && window.alert('제목을 입력해 주세요.')
     values.title = values.title ? values.title : ViewData.title; 
     values.emergency = values.emergency ? true : false;
-    values.type = values.type ? Type : ViewData.type; 
+    values.type = Type ? Type : ViewData.type; 
+    values.modify_log = values.modify_log ? values.modify_log : "";
+    if(values.type === "1"){
+      values.project_date = null;
+    }
+    
     firebase.database().ref(`work_list/${match.params.uid}`)
     .update({
       ...values,
@@ -62,12 +73,13 @@ function Modify() {
     if(ViewData.log){
       arr = ViewData.log
     }
+    
     obj = {
       date:getFormatDate(new Date()),
       name:userInfo.displayName,
       part:userInfo.photoURL,
       state:"9",
-      desc:values.modify_log ? values.modify_log : ""
+      desc:values.modify_log
     }
     arr.push(obj);
     firebase.database().ref(`work_list/${match.params.uid}`)
@@ -103,7 +115,7 @@ function Modify() {
           </Radio.Group>
         </Form.Item>
 
-        {ViewData.type === "1" && 
+        {Type && Type === "1" && 
           <>
             <div className="flex-box">
               <Form.Item
@@ -124,7 +136,7 @@ function Modify() {
           </>
         }
 
-        {ViewData.type === "2" && 
+        {Type && Type === "2" && 
           <>
             <div className="flex-box">
               <Form.Item
@@ -137,11 +149,23 @@ function Modify() {
                   <Option value="2">추가</Option>
                 </Select>
               </Form.Item>
-              <Form.Item
-                name="project_date"                
-              >
-                <RangePicker defaultValue={[moment(ViewData.project_date[0].full_,'YYYY-MM-DD'),moment(ViewData.project_date[1].full_,'YYYY-MM-DD')]}/>
-              </Form.Item>
+                {ViewData.project_date ? (
+                  <>
+                  <Form.Item
+                    name="project_date"                                    
+                  > 
+                    <RangePicker onCalendarChange={onDatePicker} defaultValue={[moment(ViewData.project_date[0].full_,'YYYY-MM-DD'),moment(ViewData.project_date[1].full_,'YYYY-MM-DD')]}/>
+                  </Form.Item>
+                  </>
+                ):(
+                  <>
+                  <Form.Item
+                    name="project_date"                               
+                  > 
+                    <RangePicker onCalendarChange={onDatePicker} />
+                  </Form.Item>
+                  </>
+                )}
             </div>
           </>
         }
@@ -154,6 +178,9 @@ function Modify() {
           useCommandShortcut={true}
           ref={editorRef}
         />
+        <Form.Item name="modify_log" style={{marginTop:"15px"}}>
+          <Input placeholder="수정사항 기록" />
+        </Form.Item>
         <div className="flex-box j-center" style={{margin:"20px 0"}}>
           <Button style={{marginRight:"5px"}}>
             <Link to="/">목록으로</Link>
@@ -163,9 +190,6 @@ function Modify() {
           </Button>
           <Button type="primary" htmlType="submit">확인</Button>
         </div>
-        <Form.Item name="modify_log">
-          <Input placeholder="수정사항 기록" />
-        </Form.Item>
       </Form>
       }
     </>

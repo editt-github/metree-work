@@ -1,33 +1,89 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Table, Radio } from "antd";
+import { Button, Table, Radio, Select, Input } from "antd";
+import * as antIcon from "react-icons/ai";
 import firebase from '../firebase';
+const { Option } = Select;
+const { Search } = Input;
 
 function Main() {
   const db = firebase.database();
 
   const [WorkList, setWorkList] = useState();
-  const [Sort, setSort] = useState("3")
+  const [Rerender, setRerender] = useState(false)
+  const [Sort, setSort] = useState("4")
   const onSortChange = (e) => {
     setSort(e.target.value);
   }
 
+  const [Site, setSite] = useState()
+  const onSiteChange = (e) => {
+    const val = e.value;
+    setSite(val)
+  }
+
+  const [SearchType, setSearchType] = useState("1")
+  const onSearchType = (e) => {
+    console.log(e)
+    setSearchType(e)
+  }
+
+  const [SearchKey, setSearchKey] = useState()
+  const onSearch = (e) => {
+    console.log(e)
+    setSearchKey(e)
+    setRerender(!Rerender)
+  }
+
+
   useEffect(() => {
     db.ref('work_list')
-    .once("value")
+    .get("value")
     .then(snapshot => {
       let arr = [];
+      let searchArr = [];
       snapshot.forEach(el => {
+        const value = el.val();
+        
+        //상태 필터
         if(Sort === ""){
-          arr.push(el.val())
-        }else if(Sort === "3"){
-          if(el.val().state === "0" || el.val().state === "1"){
-            arr.push(el.val())
+          arr.push(value)
+        }else if(Sort === "4"){
+          if(value.state === "0" || value.state === "1" || value.state === "2"){
+            arr.push(value)
           }
-        }else if(Sort === el.val().state){
-          arr.push(el.val())
+        }else if(Sort === value.state){
+          arr.push(value)
         }
+        
+        //사이트 필터
+        if(Site === ""){
+          arr.push(value)
+        }else if(Site === value.site){
+          arr.push(value)
+        }
+        
+        //검색 
+        if(SearchKey){   
+          console.log(SearchType)
+          if(SearchType === "1" && value.title.includes(SearchKey)){
+            searchArr.push(value)
+          }
+          if(SearchType === "2" && value.content.includes(SearchKey)){
+            searchArr.push(value)
+          }
+          if(SearchType === "3" && (value.content.includes(SearchKey) || value.title.includes(SearchKey))){
+            searchArr.push(value)
+          }
+          if(SearchType === "4" && value.name.includes(SearchKey)){
+            searchArr.push(value)
+          }
+        }
+
       });
+      if(searchArr != ""){
+        arr = searchArr
+      }
       arr.sort((a,b) => {
         return b.timestamp - a.timestamp
       })
@@ -35,8 +91,7 @@ function Main() {
     })
     return () => {
     }
-  }, [Sort])
-  
+  }, [Sort,Rerender])
 
 
   const columns = [
@@ -46,12 +101,24 @@ function Main() {
       key: 'state',
       align: 'center', 
       width: '80px',     
+      sorter: (a, b) => a.state - b.state,
       render: data => {
         data = data == '0' ? (<span className="state-txt0">대기</span>) : 
-        data == '1' ? (<span className="state-txt1">진행</span>) : 
-        data == '2' ? (<span className="state-txt2">완료</span>) : '';
+        data == '1' ? (<span className="state-txt1">접수</span>) : 
+        data == '2' ? (<span className="state-txt2">진행</span>) : 
+        data == '3' ? (<span className="state-txt3">완료</span>) : '';
         return data
       }
+    },
+    {
+      title: '사이트',
+      dataIndex: 'site',
+      key: 'site',
+      align: 'center',     
+      width: '100px', 
+      responsive: ['md'],
+      sorter: (a, b) => a.site.length - b.site.length,
+      render: data => data ? data : ""
     },
     {
       title: '유형1',
@@ -59,6 +126,7 @@ function Main() {
       key: 'type',
       align: 'center',     
       width: '100px', 
+      responsive: ['lg'],
       render: (text,row) => row["type"] === "1" ? '일반' : '프로젝트'
     },
     {
@@ -67,6 +135,7 @@ function Main() {
       key: 'type2',
       align: 'center',     
       width: '100px', 
+      responsive: ['lg'],
       render: (text,row) => row["basic_type"] === "1" ? "오류" : 
       row["basic_type"] === "2" ? "수정/추가" :
       row["project_type"] === "1" ? "개편" : 
@@ -74,41 +143,76 @@ function Main() {
     },
     {
       title: '제목',
-      dataIndex: ['title','uid'],
+      dataIndex: ['title','uid','emergency'],
       key: 'title',
       align: 'left',      
-      render: (text,row) => <Link to={`/view/${row["uid"]}`}>{row["title"]}</Link>
+      render: (text,row) => {
+        let content;
+        if(row["emergency"]){
+          content = <Link className="emergency" to={`/view/${row["uid"]}`}>
+            <antIcon.AiOutlineAlert />{row["title"]}</Link>
+        }else{
+          content = <Link to={`/view/${row["uid"]}`}>{row["title"]}</Link>
+        }
+        return content
+      }
     },
     {
       title: '기한',
       dataIndex: 'project_date',
       key: 'project_date',
       align: 'center',     
-      width: '200px', 
+      width: '180px', 
+      responsive: ['md'],
       render: data => data ? `${data[0].full_} ~ ${data[1].full_}` : '',
+    },
+    {
+      title: '작성자',
+      dataIndex: ['name','part'],
+      key: 'project_date',
+      align: 'center',     
+      width: '150px', 
+      responsive: ['md'], 
+      render: (text,row) => `${row["name"]}(${row["part"]})`,
     },
     {
       title: '작성일',
       dataIndex: 'd_regis',
       key: 'd_regis',
       align: 'center', 
-      width: '130px',     
+      width: '130px',   
+      responsive: ['md'],  
       render: data => data ? `${data.full_} ${data.hour}:${data.min}` : '',
     },
   ]  
   return (
     <>
+      <div className="list-top-filter">
+        <Select
+          labelInValue
+          placeholder="사이트선택"
+          onChange={onSiteChange}
+        >
+          <Option value="미트리">미트리</Option>
+          <Option value="마이오피스">마이오피스</Option>
+          <Option value="마이닭">마이닭</Option>
+          <Option value="기타">기타</Option>
+        </Select>
+        
+      </div>
       {WorkList && 
         <>
           <Radio.Group onChange={onSortChange} defaultValue={Sort} style={{marginBottom:"15px"}}>
             <Radio.Button value="">전체</Radio.Button>
-            <Radio.Button value="3">대기+진행</Radio.Button>
+            <Radio.Button value="4">대기+접수+진행</Radio.Button>
             <Radio.Button value="0">대기</Radio.Button>
-            <Radio.Button value="1">진행</Radio.Button>
-            <Radio.Button value="2">완료</Radio.Button>
+            <Radio.Button value="1">접수</Radio.Button>
+            <Radio.Button value="2">진행</Radio.Button>
+            <Radio.Button value="3">완료</Radio.Button>
           </Radio.Group>
           <Table 
-          rowKey={ item => { return item.key } }
+          className="list-table"
+          rowKey={ item => { return item.uid } }
           pagination={{
             pageSize:10,
             position:"bottomCenter"
@@ -117,9 +221,21 @@ function Main() {
           /> 
         </>
       }
-      
+      <div className="search-box">
+          <Select
+            defaultValue="1"
+            style={{ marginRight:"5px" }}
+            onChange={onSearchType}
+          >
+            <Option value="1">제목</Option>
+            <Option value="2">내용</Option>
+            <Option value="3">제목+내용</Option>
+            <Option value="4">작성자</Option>
+          </Select>
+          <Search placeholder="검색어" onSearch={onSearch} enterButton />
+        </div>
       <div style={{textAlign:"right",marginTop:"15px"}}>
-        <Button style={{width:"100px"}} type="primary">
+        <Button className="btn-m-100" type="primary">
           <Link to="/write">게시물 등록</Link>
         </Button>
       </div>

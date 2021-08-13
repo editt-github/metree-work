@@ -13,7 +13,7 @@ export const OderModalPopup = styled.div`
   padding: 20px;
   border: 1px solid #ddd;
   position: absolute;
-  left:-30px;top:30px;
+  left: 50%;bottom:40px;transform: translateX(-50%);
   z-index: 150;
   border-radius: 10px;
   background: #fff;
@@ -28,7 +28,7 @@ export const OderModalPopup = styled.div`
   @media all and (max-width: 640px) {
     width: 90vw;min-width:0;
     max-width: 300px;
-    left:-90px
+    bottom:135px;
   }
   .num {
     width: 40px;
@@ -54,10 +54,12 @@ function View() {
   const userInfo = useSelector((state) => state.user.currentUser);
   const btnToList = useRef();
   const btnToModify = useRef();
+  const stateSel = useRef();
   const [UserDb, setUserDb] = useState();  
   const match = useRouteMatch("/view/:uid");
   const [ViewData, setViewData] = useState();
   const [Rerender, setRerender] = useState(false);
+
   useEffect(() => {
     if(userInfo){
       firebase
@@ -78,7 +80,18 @@ function View() {
     }
   }, [Rerender]);
   const contentDesc = () => {
-    return {__html: ViewData.content}
+    let content;
+    if(OgContent){
+      content = ViewData.og_content
+    }else{
+      content = ViewData.content
+    }
+    return {__html: content}
+  }
+  const [OgContent, setOgContent] = useState(false);
+  const onOgContent = () => {
+    console.log(OgContent)
+    setOgContent(!OgContent)
   }
 
   const [StatePop, setStatePop] = useState(false)
@@ -106,16 +119,18 @@ function View() {
       date:getFormatDate(new Date()),
       name:userInfo.displayName,
       part:userInfo.photoURL,
-      state:StateSelect,
+      state:stateSel.current.value,
       desc:StateInput ? StateInput : ""
     }
     arr.push(obj);
+
     firebase.database().ref(`work_list/${match.params.uid}`)
     .update({
-      state:StateSelect,
+      state:stateSel.current.value,
       log:arr
     })
     setRerender(!Rerender)
+    setStatePop(false)
   }
   const onCloseStatePop = () => {
     setStatePop(false);
@@ -139,30 +154,13 @@ function View() {
         <>
           <Descriptions title={ViewData.title} bordered>
             <Descriptions.Item label="상태">
-              <div style={{position:"relative"}}>
-                <Button onClick={onStatePop} style={{border:"none",padding:"0"}}>                
+              <div style={{position:"relative"}}>              
                 {
                   ViewData.state === "0" ? (<span className="state-txt0">대기</span>) :
-                  ViewData.state === "1" ? (<span className="state-txt1">진행</span>) :
-                  ViewData.state === "2" ? (<span className="state-txt2">완료</span>) : ''
-                }
-                </Button>
-                {StatePop && 
-                  <OderModalPopup>
-                    <div className="flex-box a-center">
-                      <select defaultValue={ViewData.state} onChange={onStateChange} style={{ width: "60px",marginRight:"5px" }}>
-                        <option value="0">대기</option>
-                        <option value="1">진행</option>
-                        <option value="2">완료</option>
-                      </select>
-                      <Input style={{marginRight:"5px",flex:1}} onChange={onStateInput} />
-                    </div>
-                    <div className="flex-box j-center" style={{marginTop:"10px"}}>
-                    <Button style={{marginRight:"5px"}} onClick={onStateModify}>확인</Button>
-                    <Button onClick={onCloseStatePop}>닫기</Button>
-                    </div>
-                  </OderModalPopup>
-                }
+                  ViewData.state === "1" ? (<span className="state-txt1">접수</span>) :
+                  ViewData.state === "2" ? (<span className="state-txt2">진행</span>) :
+                  ViewData.state === "3" ? (<span className="state-txt3">완료</span>) : ''
+                }              
               </div>
             </Descriptions.Item>
             <Descriptions.Item label="작성일">{`${ViewData.d_regis.full_} ${ViewData.d_regis.hour}:${ViewData.d_regis.min}`}</Descriptions.Item>
@@ -230,21 +228,42 @@ function View() {
                 </ul>
             </Descriptions.Item>
           </Descriptions>
-          <div className="flex-box j-center" style={{margin:"20px 0"}}>
-            <Button style={{marginRight:"5px"}}>
+          <div className="view-btn-box">
+            <Button>
               <Link ref={btnToList} to="/">목록으로</Link>
+            </Button> 
+              <Button onClick={onOgContent}> {!OgContent ? '원본보기' : '수정본보기' }</Button>         
+            <Button onClick={onStatePop}>
+              상태변경
             </Button>
             {
               ViewData.user_uid === userInfo.uid &&
-              <Button onClick={onModify} style={{marginRight:"5px"}}>
+              <Button onClick={onModify}>
                 <Link ref={btnToModify} to={`/modify/${match.params.uid}`}>수정</Link>
               </Button>
             }
             {
-              UserDb && UserDb.role > 2 &&
-              <Button onClick={onDelete} style={{marginRight:"5px"}}>
+              (UserDb && UserDb.role) > 2 || (ViewData.user_uid === userInfo.uid) &&
+              <Button onClick={onDelete}>
                 삭제
               </Button>
+            }
+            {StatePop && 
+              <OderModalPopup>
+                <div className="flex-box a-center">
+                  <select ref={stateSel} defaultValue={ViewData.state} onChange={onStateChange} style={{ width: "60px",marginRight:"5px" }}>
+                    <option value="0">대기</option>
+                    <option value="1">접수</option>
+                    <option value="2">진행</option>
+                    <option value="3">완료</option>
+                  </select>
+                  <Input placeholder="기록사항" style={{marginRight:"5px",flex:1}} onChange={onStateInput} />
+                </div>
+                <div className="flex-box j-center" style={{marginTop:"10px"}}>
+                <Button style={{marginRight:"5px"}} onClick={onStateModify}>확인</Button>
+                <Button onClick={onCloseStatePop}>닫기</Button>
+                </div>
+              </OderModalPopup>
             }
           </div>
       </>

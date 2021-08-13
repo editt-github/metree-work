@@ -41,6 +41,7 @@ function Write() {
     .set({
       ...values,
       content:getHtml,
+      og_content:getHtml,
       d_regis:d_regis,
       state:"0",
       uid:uid,
@@ -60,16 +61,29 @@ function Write() {
         >
           <Input placeholder="제목" />
         </Form.Item>
-        <Form.Item 
-          name="type"
-          onChange={onTypeChange}
-        >
-          <Radio.Group defaultValue={Type}>
-            <Radio.Button value="1">일반</Radio.Button >
-            <Radio.Button value="2">프로젝트</Radio.Button >
-          </Radio.Group>
-        </Form.Item>
-
+        <div className="flex-box">
+          <Form.Item
+            name="site"
+            style={{width:"100%",maxWidth:"120px",marginRight:"10px"}}
+            rules={[{ required: true, message: '사이트'}]}
+          >
+            <Select placeholder="사이트선택">
+              <Option value="미트리">미트리</Option>
+              <Option value="마이오피스">마이오피스</Option>
+              <Option value="마이닭">마이닭</Option>
+              <Option value="기타">기타</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item 
+            name="type"
+            onChange={onTypeChange}
+          >
+            <Radio.Group defaultValue={Type}>
+              <Radio.Button value="1">일반</Radio.Button >
+              <Radio.Button value="2">프로젝트</Radio.Button >
+            </Radio.Group>
+          </Form.Item>
+        </div>
         {Type && Type === "1" && 
           <>
             <div className="flex-box">
@@ -114,7 +128,6 @@ function Write() {
         }
         
         <Editor
-          initialValue="hello react editor world!"
           previewStyle="vertical"
           height="600px"
           initialEditType="wysiwyg"
@@ -124,8 +137,8 @@ function Write() {
         <div className="flex-box j-center" style={{margin:"20px 0"}}>
           <Button style={{marginRight:"5px"}}>
             <Link ref={btnToList} to="/">목록으로</Link>
-          <Button type="primary" htmlType="submit">확인</Button>
           </Button>
+          <Button type="primary" htmlType="submit">확인</Button>
         </div>
       </Form>
     </>

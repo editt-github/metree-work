@@ -16,12 +16,12 @@ import Main from "./component/Main";
 import Write from "./component/Write";
 import Modify from "./component/Modify";
 import View from "./component/View";
+import Join from "./component/Join";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
 function App() {
-
   const firebaseUserInfo = firebase.auth().currentUser;
   let name, email, photoUrl, uid, emailVerified;
   if (firebaseUserInfo != null) {
@@ -38,18 +38,23 @@ function App() {
   let dispatch = useDispatch();
   const isLoading = useSelector((state) => state.user.isLoading);
   useEffect(() => {
-    if(currentUser){  
+    if(currentUser){
       firebase
       .database()
       .ref("users")
       .child(currentUser.uid)
-      .on("value", (snapshot) => {
+      .once("value", (snapshot) => {
         setUserDb(snapshot.val());
       });
     }
+    return () => {
+      setUserDb()
+    }
+  }, [currentUser])
+  useEffect(() => {
+    
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        history.push("/");
         dispatch(setUser(user));
       } else {
         history.push("/login");
@@ -58,13 +63,6 @@ function App() {
     });
   }, []);
 
-
-
-
-  const [LeftMenu, setLeftMenu] = useState(false);
-  const onMenuHandler = () => {
-    setLeftMenu(!LeftMenu);
-  };
 
   const onLogout = () => {
     firebase.auth().signOut();
@@ -78,10 +76,10 @@ function App() {
             <div className="flex-box nav-top-box">
               {!currentUser ? (
                 <>
-                  <Link to="/login" onClick={onMenuHandler}>
+                  <Link to="/login" style={{marginRight:"10px"}}>
                     login
                   </Link>
-                  <Link to="/join" onClick={onMenuHandler}>
+                  <Link to="/join">
                     join
                   </Link>
                 </>
@@ -103,15 +101,18 @@ function App() {
                 </>
               )}
             </div>
-            {/* <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
-              <Menu.Item key="1">nav 1</Menu.Item>
-            </Menu> */}
+            {(UserDb && UserDb.role > 2) || (UserDb && UserDb.auth && UserDb.auth.includes('it')) &&
+            <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
+              <Menu.Item key="1">Admin</Menu.Item>
+            </Menu>
+            }
           </div>
         </Header> 
         <Content className="content-box layout">
           <Switch>
             <Route exact path="/" component={Main} />
             <Route exact path="/login" component={Login} />
+            <Route exact path="/join" component={Join} />
             <Route exact path="/write" component={Write} />
             <Route exact path="/modify/:uid" component={Modify} />
             <Route exact path="/view/:uid" component={View} />

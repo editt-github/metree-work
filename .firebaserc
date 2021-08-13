@@ -1,5 +1,14 @@
 {
   "projects": {
     "default": "cafe-order-226e3"
+  },
+  "targets": {
+    "cafe-order-226e3": {
+      "hosting": {
+        "work": [
+          "metree-it-work"
+        ]
+      }
+    }
   }
 }
