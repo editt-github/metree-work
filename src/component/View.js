@@ -160,19 +160,27 @@ function View() {
                   ViewData.state === "0" ? (<span className="state-txt0">대기</span>) :
                   ViewData.state === "1" ? (<span className="state-txt1">접수</span>) :
                   ViewData.state === "2" ? (<span className="state-txt2">진행</span>) :
-                  ViewData.state === "3" ? (<span className="state-txt3">완료</span>) : ''
-                }    
+                  ViewData.state === "3" ? (<span className="state-txt2">확인요청</span>) :
+                  ViewData.state === "4" ? (<span className="state-txt2">수정요청</span>) :
+                  ViewData.state === "5" ? (<span className="state-txt2">확인완료</span>) :
+                  ViewData.state === "6" ? (<span className="state-txt3">완료</span>) : ''
+                }   
+                {ViewData.type != "0" && 
                 <Button className="has-icon" style={{marginLeft:"5px"}} onClick={onStatePop}>
                   <>상태변경</>
                 </Button>          
+                }
                 {StatePop && 
                   <OderModalPopup>
                     <div className="flex-box a-center">
-                      <select ref={stateSel} defaultValue={ViewData.state} onChange={onStateChange} style={{ width: "60px",marginRight:"5px" }}>
+                      <select ref={stateSel} defaultValue={ViewData.state} onChange={onStateChange} style={{ width: "80px",marginRight:"5px" }}>
                         <option value="0">대기</option>
                         <option value="1">접수</option>
                         <option value="2">진행</option>
-                        <option value="3">완료</option>
+                        <option value="3">확인요청</option>
+                        <option value="4">수정요청</option>
+                        <option value="5">확인완료</option>
+                        <option value="6">완료</option>
                       </select>
                       <Input placeholder="기록사항" style={{marginRight:"5px",flex:1}} onChange={onStateInput} />
                     </div>
@@ -202,7 +210,7 @@ function View() {
                     {ViewData.emergency ? 'O' : ''}
                   </Descriptions.Item>
                 </>
-              ):
+              ): ViewData.type === "2" ?
               (
                 <>
                   <Descriptions.Item label="유형1">
@@ -218,11 +226,20 @@ function View() {
                     {ViewData.project_date[0].full_} ~ {ViewData.project_date[1].full_}
                   </Descriptions.Item>
                 </>
+              ) : 
+              (
+                <>
+                  <Descriptions.Item label="유형1" span={3}>
+                    공지
+                  </Descriptions.Item>
+                  
+                </>
               )
             }
             <Descriptions.Item span={3} label="내용">
                 <div dangerouslySetInnerHTML={contentDesc()}></div>
             </Descriptions.Item>
+            {ViewData.type != "0" &&
             <Descriptions.Item span={3} label="상태기록">
               <ul className="log-list">
                 {
@@ -233,8 +250,12 @@ function View() {
                           {
                             el.state === "9" ? (<span className="state-txt9">수정</span>) :
                             el.state === "0" ? (<span className="state-txt0">대기</span>) :
-                            el.state === "1" ? (<span className="state-txt1">진행</span>) :
-                            el.state === "2" ? (<span className="state-txt2">완료</span>) : ''
+                            el.state === "1" ? (<span className="state-txt1">접수</span>) :
+                            el.state === "2" ? (<span className="state-txt2">진행</span>) :
+                            el.state === "3" ? (<span className="state-txt2">확인요청</span>) :
+                            el.state === "4" ? (<span className="state-txt2">수정요청</span>) :
+                            el.state === "5" ? (<span className="state-txt2">확인완료</span>) :
+                            el.state === "6" ? (<span className="state-txt3">완료</span>) : ''
                           }
                         </div>
                         <div>
@@ -248,13 +269,16 @@ function View() {
                 }
                 </ul>
             </Descriptions.Item>
+            }
           </Descriptions>
           <div className="view-btn-box">
             <Button>
               <Link ref={btnToList} to="/"><antIcon.AiOutlineBars />목록</Link>
             </Button> 
-            <Button onClick={onOgContent}>{!OgContent ? <><antIcon.AiOutlineSwap />원본보기</> : <><antIcon.AiOutlineSwap />수정본보기</> }
-            </Button>    
+            {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") &&
+              <Button onClick={onOgContent}>{!OgContent ? <><antIcon.AiOutlineSwap />원본보기</> : <><antIcon.AiOutlineSwap />수정본보기</> }
+              </Button>  
+            }  
             {
               ViewData.user_uid === userInfo.uid &&
               <Button onClick={onModify}>

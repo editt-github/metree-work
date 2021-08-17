@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from "react-router-dom";
 import '@toast-ui/editor/dist/toastui-editor.css';
 import firebase from '../firebase';
@@ -14,6 +14,7 @@ const { RangePicker } = DatePicker;
 
 function Write() {
   const userInfo = useSelector((state) => state.user.currentUser);
+  const [UserDb, setUserDb] = useState();  
   const editorRef = React.useRef();
   const btnToList = React.useRef();
 
@@ -22,6 +23,20 @@ function Write() {
     const type = e.target.value;
     setType(type);
   }
+
+  useEffect(() => {
+    if(userInfo){
+      firebase
+      .database()
+      .ref("users")
+      .child(userInfo.uid)
+      .once("value", (snapshot) => {
+        setUserDb(snapshot.val());
+      });
+    }
+    return () => {      
+    }
+  }, [])
 
 
   const onsubmit = (values) => {
@@ -80,6 +95,9 @@ function Write() {
             onChange={onTypeChange}
           >
             <Radio.Group defaultValue={Type}>
+              {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") &&
+                <Radio.Button value="0">공지</Radio.Button >
+              }]
               <Radio.Button value="1">일반</Radio.Button >
               <Radio.Button value="2">프로젝트</Radio.Button >
             </Radio.Group>

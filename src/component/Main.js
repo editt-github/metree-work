@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Table, Radio, Select, Input } from "antd";
 import * as antIcon from "react-icons/ai";
 import firebase from '../firebase';
+import { OderModalPopup } from './View'
 const { Option } = Select;
 const { Search } = Input;
 
@@ -11,7 +12,7 @@ function Main() {
 
   const [WorkList, setWorkList] = useState();
   const [Rerender, setRerender] = useState(false)
-  const [Sort, setSort] = useState("4")
+  const [Sort, setSort] = useState("8")
   const onSortChange = (e) => {
     setSort(e.target.value);
   }
@@ -45,7 +46,7 @@ function Main() {
         const value = el.val();
         
         //사이트 필터
-        if(Site && Site === value.site){
+        if(Site && Site === value.site || value.type === "0"){
           siteArr.push(value)
         }
         
@@ -63,55 +64,92 @@ function Main() {
           if(SearchType === "4" && value.name.includes(SearchKey)){
             searchArr.push(value)
           }
+          console.log(SearchKey,searchArr)
         }
-
+        
         arr.push(value)        
-
+        
       });
-
+      
       if(Site){
         arr = siteArr
       }
-      if(searchArr != ""){
+      if(SearchKey){
         arr = searchArr
       }
-
+      arr.map(el=>{
+        if(el.type === "0"){
+          el.index = 0;
+          el.state = "all" 
+        }else if(el.state != "6" && el.emergency){
+          el.index = 1;
+        }else{
+          el.index = 2;
+        }        
+        
+      })
       //상태 필터
       if(Sort){
-        if(Sort === "4"){        
-          arr = arr.filter(el => el.state === "0" || el.state === "1" || el.state === "2")
+        if(Sort === "8"){        
+          arr = arr.filter(el => el.state === "0" || el.state === "1" || el.state === "2" || el.state === "3" || el.state === "4" || el.state === "5" || el.state === "all")
         }else{
-          arr = arr.filter(el => el.state === Sort)
+          arr = arr.filter(el => el.state === Sort || el.state === "all")
         }  
       }
 
       arr.sort((a,b) => {
         return b.timestamp - a.timestamp
       })
+      
       arr.sort((a,b) => {
-        return b.emergency - a.emergency
+        return a.index - b.index
       })
+
       setWorkList(arr)
     })
     return () => {
     }
   }, [Sort,Rerender,Site])
 
+  const stateViewPop = useRef()
+  const [StateView, setStateView] = useState(false)
+  const [StateViewTxt, setStateViewTxt] = useState()
+  const onStateOver = (e,log) => {
+    let posX = e.clientX;
+    let posY = e.clientY;
+    setStateViewTxt(log)
+    setStateView(true)
+    stateViewPop.current.style.minWidth = "0";
+    stateViewPop.current.style.left = (posX+135) + "px";
+    stateViewPop.current.style.top = (posY) + "px";
+    stateViewPop.current.style.transform = "translate(-50%,-45%)"
+  }
+  const stateViewClose = () => {
+    setStateView(false)
+  }
+
+
 
   const columns = [
     {
       title: '상태',
-      dataIndex: 'state',
+      dataIndex: ['state','log','type'],
       key: 'state',
       align: 'center', 
       width: '80px',     
       sorter: (a, b) => a.state - b.state,
-      render: data => {
-        data = data == '0' ? (<span className="state-txt0">대기</span>) : 
-        data == '1' ? (<span className="state-txt1">접수</span>) : 
-        data == '2' ? (<span className="state-txt2">진행</span>) : 
-        data == '3' ? (<span className="state-txt3">완료</span>) : '';
-        return data
+      render: (text,row) => {
+        let data;
+        if(row['type'] != "0") {
+          data = row['state'] == '0' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])} className="state state-txt0">대기</span>) : 
+          row['state'] == '1' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt1">접수</span>) : 
+          row['state'] == '2' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">진행</span>) : 
+          row['state'] == '3' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">확인요청</span>) : 
+          row['state'] == '4' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">수정요청</span>) : 
+          row['state'] == '5' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">확인완료</span>) : 
+          row['state'] == '6' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt3">완료</span>) : '';    
+        } 
+        return data;
       }
     },
     {
@@ -131,7 +169,7 @@ function Main() {
       align: 'center',     
       width: '100px', 
       responsive: ['lg'],
-      render: (text,row) => row["type"] === "1" ? '일반' : '프로젝트'
+      render: (text,row) => row["type"] === "1" ? '일반' : row["type"] === "2" ? '프로젝트' : '공지'
     },
     {
       title: '유형2',
@@ -147,7 +185,7 @@ function Main() {
     },
     {
       title: '제목',
-      dataIndex: ['title','uid','emergency'],
+      dataIndex: ['title','uid','emergency','type'],
       key: 'title',
       align: 'left',      
       render: (text,row) => {
@@ -155,6 +193,8 @@ function Main() {
         if(row["emergency"]){
           content = <Link className="emergency" to={`/view/${row["uid"]}`}>
             <antIcon.AiOutlineAlert />{row["title"]}</Link>
+        }else if(row["type"] === "0"){
+          content = <Link className="emergency notice" to={`/view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}</Link>
         }else{
           content = <Link to={`/view/${row["uid"]}`}>{row["title"]}</Link>
         }
@@ -207,13 +247,16 @@ function Main() {
       </div>
       {WorkList && 
         <>
-          <Radio.Group onChange={onSortChange} defaultValue={Sort} style={{marginBottom:"15px"}}>
+          <Radio.Group className="top-state-radio" onChange={onSortChange} defaultValue={Sort} style={{marginBottom:"15px"}}>
             <Radio.Button value="">전체</Radio.Button>
-            <Radio.Button value="4">대기+접수+진행</Radio.Button>
+            <Radio.Button value="8">대기+접수+진행</Radio.Button>
             <Radio.Button value="0">대기</Radio.Button>
             <Radio.Button value="1">접수</Radio.Button>
             <Radio.Button value="2">진행</Radio.Button>
-            <Radio.Button value="3">완료</Radio.Button>
+            <Radio.Button value="3">확인요청</Radio.Button>
+            <Radio.Button value="4">수정요청</Radio.Button>
+            <Radio.Button value="5">확인완료</Radio.Button>
+            <Radio.Button value="6">완료</Radio.Button>
           </Radio.Group>
           <Table 
           className="list-table"
@@ -225,7 +268,32 @@ function Main() {
           align="center" columns={columns} dataSource={WorkList} 
           /> 
         </>
-      }
+      }      
+      <OderModalPopup style={{padding:"0"}} className={StateView ? "" : "hidden"} ref={stateViewPop}>
+        {StateViewTxt && 
+        <ul className="log-list" style={{padding:"15px"}}>        
+        {
+          StateViewTxt && StateViewTxt.map((el,idx) => (
+            <li className="flex-box" key={idx}>
+              <div>
+                {
+                  el.state === "9" ? (<span className="state-txt9">수정</span>) :
+                  el.state === "0" ? (<span className="state-txt0">대기</span>) :
+                  el.state === "1" ? (<span className="state-txt1">접수</span>) :
+                  el.state === "2" ? (<span className="state-txt2">진행</span>) :
+                  el.state === "3" ? (<span className="state-txt2">확인요청</span>) :
+                  el.state === "4" ? (<span className="state-txt2">수정요청</span>) :
+                  el.state === "5" ? (<span className="state-txt2">확인완료</span>) :
+                  el.state === "6" ? (<span className="state-txt3">완료</span>) : ''
+                }
+              </div>
+              <div>{el.name}({el.part})</div>
+            </li>
+          ))
+        }
+        </ul>
+        }
+      </OderModalPopup>
       <div className="search-box">
           <Select
             defaultValue="1"

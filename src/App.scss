@@ -8,7 +8,7 @@
 .p-color{color:$p-color;}
 .p-color-l{color:lighten($p-color,5%);}
 
-.hidden{position: absolute;width: 0;height: 0;opacity: 0;left: -9999;}
+.hidden{position: absolute;width: 0;height: 0;opacity: 0;left: -9999;z-index: -99 !important;}
 
 .join-form p{color: $p-color;}
 .join-form button[type="submit"],
@@ -354,6 +354,7 @@ select{
 .state-txt2{font-weight: 700; color: rgb(236, 59, 59);}
 .state-txt3{font-weight: 700; color: #a1a1a1;}
 .log-list{
+  margin-bottom: 0;
   li{
     >div{margin-right: 10px;
     }
@@ -451,16 +452,22 @@ button{
 }
 
 
+
 // 리스트 
 .list-table{
-  td{font-size: 13px;color: #555;}
-  a{color: #222;font-weight: 700;}
+  td{font-size: 13px;color: #555;
+    a{color: #222;font-weight: 700;}
+  }
   .emergency{
     @include flex($a:center);
     font-weight: bold;
     color: rgb(240, 24, 24);
     svg{margin-right: 3px;width:18px;height: 18px;}
+    &.notice{
+      color: #03aa4e;
+    }
   }
+  .state{display: block;}
 }
 
 
@@ -488,6 +495,12 @@ button{
     button{
       width: 100%;height: 35px; margin-right: 0;margin-bottom: 7px;
     } 
+  }
+
+  .top-state-radio{
+    @include flex();flex-wrap: wrap;
+    margin-left: 1px;margin-top:5px;
+    label{width:33.33%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;border-width: 1px;margin-left: -1px;margin-top: -1px;font-size: 12px;}
   }
 
   

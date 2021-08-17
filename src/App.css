@@ -19,7 +19,8 @@
   width: 0;
   height: 0;
   opacity: 0;
-  left: -9999; }
+  left: -9999;
+  z-index: -99 !important; }
 
 .join-form p {
   color: #30b46b; }
@@ -570,6 +571,9 @@ select {
   font-weight: 700;
   color: #a1a1a1; }
 
+.log-list {
+  margin-bottom: 0; }
+
 .log-list li > div {
   margin-right: 10px; }
 
@@ -703,7 +707,7 @@ button a svg, button span svg {
   font-size: 13px;
   color: #555; }
 
-.list-table a {
+.list-table td a {
   color: #222;
   font-weight: 700; }
 
@@ -719,6 +723,12 @@ button a svg, button span svg {
   margin-right: 3px;
   width: 18px;
   height: 18px; }
+
+.list-table .emergency.notice {
+  color: #03aa4e; }
+
+.list-table .state {
+  display: block; }
 
 @media (max-width: 760px) {
   .ant-layout-sider.nav-wrap {
@@ -748,7 +758,24 @@ button a svg, button span svg {
     width: 100%;
     height: 35px;
     margin-right: 0;
-    margin-bottom: 7px; } }
+    margin-bottom: 7px; }
+  .top-state-radio {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-left: 1px;
+    margin-top: 5px; }
+  .top-state-radio label {
+    width: 33.33%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    border-width: 1px;
+    margin-left: -1px;
+    margin-top: -1px;
+    font-size: 12px; } }
 
 .ani-fadeup {
   animation: fade_up 0.6s both; }
