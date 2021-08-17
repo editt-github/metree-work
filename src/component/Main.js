@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
-import { Button, Table, Radio, Select, Input } from "antd";
+import { Button, Table, Radio, Select, Input, Space } from "antd";
 import * as antIcon from "react-icons/ai";
 import firebase from '../firebase';
 import { OderModalPopup } from './View'
@@ -106,6 +106,7 @@ function Main() {
       })
 
       setWorkList(arr)
+      console.log(WorkList)
     })
     return () => {
     }
@@ -294,19 +295,24 @@ function Main() {
         </ul>
         }
       </OderModalPopup>
+      {WorkList && WorkList.length == 0 &&
+        <>
+        <div style={{height:"15px"}}></div>
+        </>
+      }
       <div className="search-box">
-          <Select
-            defaultValue="1"
-            style={{ marginRight:"5px" }}
-            onChange={onSearchType}
-          >
-            <Option value="1">제목</Option>
-            <Option value="2">내용</Option>
-            <Option value="3">제목+내용</Option>
-            <Option value="4">작성자</Option>
-          </Select>
-          <Search placeholder="검색어" onSearch={onSearch} enterButton />
-        </div>
+        <Select
+          defaultValue="1"
+          style={{ marginRight:"5px" }}
+          onChange={onSearchType}
+        >
+          <Option value="1">제목</Option>
+          <Option value="2">내용</Option>
+          <Option value="3">제목+내용</Option>
+          <Option value="4">작성자</Option>
+        </Select>
+        <Search placeholder="검색어" onSearch={onSearch} enterButton />
+      </div>
       <div style={{textAlign:"right",marginTop:"15px"}}>
         <Button className="btn-m-100" type="primary">
           <Link to="/write">게시물 등록</Link>
