@@ -16,7 +16,7 @@ function Main() {
     setSort(e.target.value);
   }
 
-  const [Site, setSite] = useState()
+  const [Site, setSite] = useState("")
   const onSiteChange = (e) => {
     const val = e.value;
     setSite(val)
@@ -24,13 +24,11 @@ function Main() {
 
   const [SearchType, setSearchType] = useState("1")
   const onSearchType = (e) => {
-    console.log(e)
     setSearchType(e)
   }
 
   const [SearchKey, setSearchKey] = useState()
   const onSearch = (e) => {
-    console.log(e)
     setSearchKey(e)
     setRerender(!Rerender)
   }
@@ -42,30 +40,17 @@ function Main() {
     .then(snapshot => {
       let arr = [];
       let searchArr = [];
+      let siteArr = [];
       snapshot.forEach(el => {
         const value = el.val();
         
-        //상태 필터
-        if(Sort === ""){
-          arr.push(value)
-        }else if(Sort === "4"){
-          if(value.state === "0" || value.state === "1" || value.state === "2"){
-            arr.push(value)
-          }
-        }else if(Sort === value.state){
-          arr.push(value)
-        }
-        
         //사이트 필터
-        if(Site === ""){
-          arr.push(value)
-        }else if(Site === value.site){
-          arr.push(value)
+        if(Site && Site === value.site){
+          siteArr.push(value)
         }
         
         //검색 
         if(SearchKey){   
-          console.log(SearchType)
           if(SearchType === "1" && value.title.includes(SearchKey)){
             searchArr.push(value)
           }
@@ -80,18 +65,37 @@ function Main() {
           }
         }
 
+        arr.push(value)        
+
       });
+
+      if(Site){
+        arr = siteArr
+      }
       if(searchArr != ""){
         arr = searchArr
       }
+
+      //상태 필터
+      if(Sort){
+        if(Sort === "4"){        
+          arr = arr.filter(el => el.state === "0" || el.state === "1" || el.state === "2")
+        }else{
+          arr = arr.filter(el => el.state === Sort)
+        }  
+      }
+
       arr.sort((a,b) => {
         return b.timestamp - a.timestamp
+      })
+      arr.sort((a,b) => {
+        return b.emergency - a.emergency
       })
       setWorkList(arr)
     })
     return () => {
     }
-  }, [Sort,Rerender])
+  }, [Sort,Rerender,Site])
 
 
   const columns = [
@@ -193,6 +197,7 @@ function Main() {
           placeholder="사이트선택"
           onChange={onSiteChange}
         >
+          <Option value="">전체</Option>
           <Option value="미트리">미트리</Option>
           <Option value="마이오피스">마이오피스</Option>
           <Option value="마이닭">마이닭</Option>

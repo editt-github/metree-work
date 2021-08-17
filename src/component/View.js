@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import firebase from '../firebase';
 import { useRouteMatch, Link } from "react-router-dom";
 import { Descriptions, Button, Input } from 'antd';
+import * as antIcon from "react-icons/ai";
 import styled from "styled-components";
 import { Select } from 'antd';
 import { useSelector } from "react-redux";
@@ -13,7 +14,7 @@ export const OderModalPopup = styled.div`
   padding: 20px;
   border: 1px solid #ddd;
   position: absolute;
-  left: 50%;bottom:40px;transform: translateX(-50%);
+  left: 50%;top:40px;transform: translateX(-50%);
   z-index: 150;
   border-radius: 10px;
   background: #fff;
@@ -27,8 +28,8 @@ export const OderModalPopup = styled.div`
   }
   @media all and (max-width: 640px) {
     width: 90vw;min-width:0;
-    max-width: 300px;
-    bottom:135px;
+    position:fixed;
+    left:50%;top:50%;transform:translate(-50%,-50%);
   }
   .num {
     width: 40px;
@@ -160,7 +161,27 @@ function View() {
                   ViewData.state === "1" ? (<span className="state-txt1">접수</span>) :
                   ViewData.state === "2" ? (<span className="state-txt2">진행</span>) :
                   ViewData.state === "3" ? (<span className="state-txt3">완료</span>) : ''
-                }              
+                }    
+                <Button className="has-icon" style={{marginLeft:"5px"}} onClick={onStatePop}>
+                  <>상태변경</>
+                </Button>          
+                {StatePop && 
+                  <OderModalPopup>
+                    <div className="flex-box a-center">
+                      <select ref={stateSel} defaultValue={ViewData.state} onChange={onStateChange} style={{ width: "60px",marginRight:"5px" }}>
+                        <option value="0">대기</option>
+                        <option value="1">접수</option>
+                        <option value="2">진행</option>
+                        <option value="3">완료</option>
+                      </select>
+                      <Input placeholder="기록사항" style={{marginRight:"5px",flex:1}} onChange={onStateInput} />
+                    </div>
+                    <div className="flex-box j-center" style={{marginTop:"10px"}}>
+                    <Button type="primary" style={{marginRight:"5px"}} onClick={onStateModify}>확인</Button>
+                    <Button onClick={onCloseStatePop}>닫기</Button>
+                    </div>
+                  </OderModalPopup>
+                }
               </div>
             </Descriptions.Item>
             <Descriptions.Item label="작성일">{`${ViewData.d_regis.full_} ${ViewData.d_regis.hour}:${ViewData.d_regis.min}`}</Descriptions.Item>
@@ -230,41 +251,23 @@ function View() {
           </Descriptions>
           <div className="view-btn-box">
             <Button>
-              <Link ref={btnToList} to="/">목록으로</Link>
+              <Link ref={btnToList} to="/"><antIcon.AiOutlineBars />목록</Link>
             </Button> 
-              <Button onClick={onOgContent}> {!OgContent ? '원본보기' : '수정본보기' }</Button>         
-            <Button onClick={onStatePop}>
-              상태변경
-            </Button>
+            <Button onClick={onOgContent}>{!OgContent ? <><antIcon.AiOutlineSwap />원본보기</> : <><antIcon.AiOutlineSwap />수정본보기</> }
+            </Button>    
             {
               ViewData.user_uid === userInfo.uid &&
               <Button onClick={onModify}>
-                <Link ref={btnToModify} to={`/modify/${match.params.uid}`}>수정</Link>
+                <Link ref={btnToModify} to={`/modify/${match.params.uid}`}><antIcon.AiOutlineTool />수정</Link>
               </Button>
             }
             {
               (UserDb && UserDb.role) > 2 || (ViewData.user_uid === userInfo.uid) &&
               <Button onClick={onDelete}>
-                삭제
+                <><antIcon.AiOutlineDelete />삭제</>
               </Button>
             }
-            {StatePop && 
-              <OderModalPopup>
-                <div className="flex-box a-center">
-                  <select ref={stateSel} defaultValue={ViewData.state} onChange={onStateChange} style={{ width: "60px",marginRight:"5px" }}>
-                    <option value="0">대기</option>
-                    <option value="1">접수</option>
-                    <option value="2">진행</option>
-                    <option value="3">완료</option>
-                  </select>
-                  <Input placeholder="기록사항" style={{marginRight:"5px",flex:1}} onChange={onStateInput} />
-                </div>
-                <div className="flex-box j-center" style={{marginTop:"10px"}}>
-                <Button style={{marginRight:"5px"}} onClick={onStateModify}>확인</Button>
-                <Button onClick={onCloseStatePop}>닫기</Button>
-                </div>
-              </OderModalPopup>
-            }
+            
           </div>
       </>
       }

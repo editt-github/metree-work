@@ -433,10 +433,20 @@ select{
   .ant-input{flex:1;max-width: 400px;}
 }
 
+button{
+  a,span{
+    @include flex($a:center,$j:center);
+    font-size: 13px;
+    svg{margin-right: 4px;font-size: 14px;}
+  }
+}
 .view-btn-box{
   @include flex($j:center);
   margin:20px 0;position: relative;
-  button{margin-right: 5px;} 
+  button{
+    margin-right: 5px;
+    
+  } 
   button:last-child{margin-right: 0;}
 }
 
@@ -475,7 +485,9 @@ select{
   .btn-m-100{width: 100%;}
   .view-btn-box{
     flex-wrap: wrap;
-    button{width: 100%;height: 35px; margin-right: 0;margin-bottom: 7px;} 
+    button{
+      width: 100%;height: 35px; margin-right: 0;margin-bottom: 7px;
+    } 
   }
 
   

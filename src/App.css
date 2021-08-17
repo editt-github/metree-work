@@ -674,6 +674,17 @@ select {
   flex: 1;
   max-width: 400px; }
 
+button a, button span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: row;
+  font-size: 13px; }
+
+button a svg, button span svg {
+  margin-right: 4px;
+  font-size: 14px; }
+
 .view-btn-box {
   display: flex;
   justify-content: center;
