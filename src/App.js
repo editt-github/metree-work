@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Route, Switch, useHistory, Link } from "react-router-dom";
 import { Layout, Menu } from 'antd';
+import * as antIcon from "react-icons/ai";
 import './custom_antd.less';
 import './App.css';
 import firebase from './firebase';
@@ -55,6 +56,7 @@ function App() {
     
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
+        history.push("/");
         dispatch(setUser(user));
       } else {
         history.push("/login");
@@ -103,7 +105,8 @@ function App() {
             </div>
             {(UserDb && UserDb.role > 2) || (UserDb && UserDb.auth && UserDb.auth.includes('it')) &&
             <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
-              <Menu.Item key="1">Admin</Menu.Item>
+              <Menu.Item key="1"><Link to="/"><antIcon.AiOutlineHome style={{position:"relative",top:"3px"}} /> Home</Link></Menu.Item>
+              {/* <Menu.Item key="9">Admin</Menu.Item> */}
             </Menu>
             }
           </div>

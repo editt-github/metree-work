@@ -451,7 +451,8 @@ button{
   button:last-child{margin-right: 0;}
 }
 
-
+.ant-menu-dark .ant-menu-item-selected > a, .ant-menu-dark .ant-menu-item-selected > span > a, .ant-menu-dark .ant-menu-item-selected > a:hover, .ant-menu-dark .ant-menu-item-selected > span > a:hover{color:rgba(255, 255, 255, 0.65) !important}
+.ant-menu.ant-menu-dark .ant-menu-item-selected, .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected{background: none !important;}
 
 // 리스트 
 .list-table{

@@ -39,7 +39,7 @@ function Write() {
   }, [])
 
 
-  const onsubmit = (values) => {
+  const onsubmit = async (values) => {
     let d_regis = getFormatDate(new Date());
     if(values.project_date){
       let date = [];
@@ -53,15 +53,26 @@ function Write() {
     values.emergency = values.emergency ? true : false;
     values.type = Type; 
     const time = new Date().getTime();
-    firebase.database().ref(`work_list/${uid}`)
+    let number;
+
+    await firebase.database()
+    .ref(`work_list_number`)
+    .child("count")
+    .transaction((pre) => {
+      number = pre+1;
+      return pre + 1;
+    });
+
+    await firebase.database().ref(`work_list/${uid}`)
     .set({
       ...values,
+      number:number,
       content:getHtml,
       og_content:getHtml,
       d_regis:d_regis,
       state:"0",
       uid:uid,
-      name:userInfo.displayName,
+      name:UserDb.name,
       part:userInfo.photoURL,
       timestamp:time,
       user_uid:userInfo.uid
@@ -87,6 +98,7 @@ function Write() {
               <Option value="미트리">미트리</Option>
               <Option value="마이오피스">마이오피스</Option>
               <Option value="마이닭">마이닭</Option>
+              <Option value="카페">카페</Option>
               <Option value="기타">기타</Option>
             </Select>
           </Form.Item>

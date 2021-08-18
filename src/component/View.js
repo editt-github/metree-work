@@ -140,6 +140,12 @@ function View() {
   const onDelete = () => {
     const agree = window.confirm("삭제시 복구가 불가능합니다. 삭제하시겠습니까?");
     if(agree){
+      firebase.database()
+      .ref(`work_list_number`)
+      .child("count")
+      .transaction((pre) => {
+        return pre - 1;
+      });
       firebase.database().ref(`work_list/${match.params.uid}`).remove()
       window.alert("삭제되었습니다.")
       btnToList.current && btnToList.current.click();
@@ -202,8 +208,8 @@ function View() {
                   </Descriptions.Item>
                   <Descriptions.Item label="유형2">
                     {
-                      ViewData.basic_type === "1" ? '일반' :
-                      ViewData.basic_type === "2" ? '프로젝트' : ''
+                      ViewData.basic_type === "1" ? '오류' :
+                      ViewData.basic_type === "2" ? '수정/추가' : ''
                     }
                   </Descriptions.Item>
                   <Descriptions.Item label="긴급">
@@ -245,7 +251,7 @@ function View() {
                 {
                   ViewData.log && ViewData.log.map((el,idx) => (
                     <>
-                      <li className="flex-box" key={idx}>
+                      <li className="flex-box a-center" key={idx}>
                         <div>
                           {
                             el.state === "9" ? (<span className="state-txt9">수정</span>) :
@@ -258,11 +264,11 @@ function View() {
                             el.state === "6" ? (<span className="state-txt3">완료</span>) : ''
                           }
                         </div>
-                        <div>
+                        <div style={{fontSize:"12px",color:"#888"}}>
                           {`${el.date.full_} ${el.date.hour}:${el.date.min}`}
                         </div>
-                        <div>{el.name}({el.part})</div>
-                        <div>{el.desc ? el.desc : ""}</div>
+                        <div style={{fontSize:"13px",color:"#555"}}>{el.name}({el.part})</div>
+                        <div style={{fontSize:"13px",color:"#333",fontWeight:"600"}}>{el.desc ? el.desc : ""}</div>
                       </li>
                     </>
                   ))

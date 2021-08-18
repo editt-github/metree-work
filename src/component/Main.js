@@ -106,7 +106,6 @@ function Main() {
       })
 
       setWorkList(arr)
-      console.log(WorkList)
     })
     return () => {
     }
