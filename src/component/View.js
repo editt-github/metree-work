@@ -159,7 +159,11 @@ function View() {
     <>
       {ViewData &&
         <>
-          <Descriptions title={ViewData.title} bordered>
+          <Descriptions 
+            title={ViewData.title} 
+            bordered
+            column={{ xxl: 4, xl: 4, lg: 4, md: 3, sm: 2, xs: 1 }}
+          >
             <Descriptions.Item label="상태">
               <div style={{position:"relative"}}>              
                 {
@@ -198,11 +202,14 @@ function View() {
                 }
               </div>
             </Descriptions.Item>
-            <Descriptions.Item label="작성일">{`${ViewData.d_regis.full_} ${ViewData.d_regis.hour}:${ViewData.d_regis.min}`}</Descriptions.Item>
             <Descriptions.Item label="작성자">{ViewData.name}</Descriptions.Item>
+            <Descriptions.Item label="작성일" span={2}>{`${ViewData.d_regis.full_} ${ViewData.d_regis.hour}:${ViewData.d_regis.min}`}</Descriptions.Item>
             {ViewData.type === "1" ?
               (
                 <>
+                  <Descriptions.Item label="번호">
+                    {ViewData.number}
+                  </Descriptions.Item>
                   <Descriptions.Item label="유형1">
                     일반
                   </Descriptions.Item>
@@ -219,6 +226,9 @@ function View() {
               ): ViewData.type === "2" ?
               (
                 <>
+                  <Descriptions.Item label="번호">
+                    {ViewData.number}
+                  </Descriptions.Item>
                   <Descriptions.Item label="유형1">
                     프로젝트
                   </Descriptions.Item>
@@ -235,18 +245,20 @@ function View() {
               ) : 
               (
                 <>
-                  <Descriptions.Item label="유형1" span={3}>
+                  <Descriptions.Item label="유형1" span={2}>
                     공지
+                  </Descriptions.Item>               
+                  <Descriptions.Item label="번호" span={2}>
+                    {ViewData.number}
                   </Descriptions.Item>
-                  
                 </>
               )
             }
-            <Descriptions.Item span={3} label="내용">
+            <Descriptions.Item label="내용" span={4}>
                 <div dangerouslySetInnerHTML={contentDesc()}></div>
             </Descriptions.Item>
             {ViewData.type != "0" &&
-            <Descriptions.Item span={3} label="상태기록">
+            <Descriptions.Item label="상태기록" span={4}>
               <ul className="log-list">
                 {
                   ViewData.log && ViewData.log.map((el,idx) => (
@@ -281,7 +293,7 @@ function View() {
             <Button>
               <Link ref={btnToList} to="/"><antIcon.AiOutlineBars />목록</Link>
             </Button> 
-            {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") &&
+            {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") && (ViewData.og_content !== ViewData.content) &&
               <Button onClick={onOgContent}>{!OgContent ? <><antIcon.AiOutlineSwap />원본보기</> : <><antIcon.AiOutlineSwap />수정본보기</> }
               </Button>  
             }  

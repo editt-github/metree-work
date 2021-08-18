@@ -37,8 +37,7 @@ function Main() {
 
   useEffect(() => {
     db.ref('work_list')
-    .get("value")
-    .then(snapshot => {
+    .on("value", snapshot => {
       let arr = [];
       let searchArr = [];
       let siteArr = [];
@@ -64,7 +63,9 @@ function Main() {
           if(SearchType === "4" && value.name.includes(SearchKey)){
             searchArr.push(value)
           }
-          console.log(SearchKey,searchArr)
+          if(SearchType === "5" && String(value.number).includes(SearchKey)){
+            searchArr.push(value)
+          }
         }
         
         arr.push(value)        
@@ -131,6 +132,16 @@ function Main() {
 
 
   const columns = [
+    {
+      title: '번호',
+      dataIndex: 'number',
+      key: 'number',
+      align: 'center',     
+      width: '75px', 
+      responsive: ['md'],
+      sorter: (a, b) => a.number - b.number,
+      render: data => data ? data : ""
+    },
     {
       title: '상태',
       dataIndex: ['state','log','type'],
@@ -207,7 +218,7 @@ function Main() {
       key: 'project_date',
       align: 'center',     
       width: '180px', 
-      responsive: ['md'],
+      responsive: ['lg'],
       render: data => data ? `${data[0].full_} ~ ${data[1].full_}` : '',
     },
     {
@@ -309,6 +320,7 @@ function Main() {
           <Option value="2">내용</Option>
           <Option value="3">제목+내용</Option>
           <Option value="4">작성자</Option>
+          <Option value="5">번호</Option>
         </Select>
         <Search placeholder="검색어" onSearch={onSearch} enterButton />
       </div>
