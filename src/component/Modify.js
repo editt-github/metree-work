@@ -15,12 +15,22 @@ const { RangePicker } = DatePicker;
 function Modify() {
   const match = useRouteMatch("/modify/:uid");
   const userInfo = useSelector((state) => state.user.currentUser);
+  const [UserDb, setUserDb] = useState();  
   const editorRef = React.useRef();
   const btnToView = React.useRef();
   const [Type, setType] = useState()
 
   const [ViewData, setViewData] = useState();
   useEffect(() => {
+    if(userInfo){
+      firebase
+      .database()
+      .ref("users")
+      .child(userInfo.uid)
+      .once("value", (snapshot) => {
+        setUserDb(snapshot.val());
+      });
+    }
     firebase.database().ref(`work_list/${match.params.uid}`)
     .once("value")
     .then(snapshot => {
@@ -97,6 +107,7 @@ function Modify() {
       <Form name="dynamic_form_nest_item" className="work-list-form"
       initialValues={{
         'emergency': ViewData.emergency,
+        'secret': ViewData.secret,
         'basic_type': ViewData.basic_type,
         'project_type': ViewData.project_type,
       }} 
@@ -106,16 +117,24 @@ function Modify() {
         >
           <Input placeholder="제목" defaultValue={ViewData.title} />
         </Form.Item>
-        <Form.Item 
-          name="type"
-          onChange={onTypeChange}
-        >
-          <Radio.Group defaultValue={ViewData.type}>
-            <Radio.Button value="1">일반</Radio.Button >
-            <Radio.Button value="2">프로젝트</Radio.Button >
-          </Radio.Group>
-        </Form.Item>
-
+        <div className="flex-box wrap">
+          <Form.Item 
+            name="type"
+            onChange={onTypeChange}
+          >
+            <Radio.Group defaultValue={ViewData.type} style={{marginRight:"10px"}}>
+              {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") &&
+                <Radio.Button value="0">공지</Radio.Button >
+              }
+              <Radio.Button value="1">일반</Radio.Button >
+              <Radio.Button value="2">프로젝트</Radio.Button >
+            </Radio.Group>
+          </Form.Item>
+          <Form.Item             
+            name="secret" valuePropName="checked">
+            <Checkbox>비밀글(작성자 부서와 IT부서만 볼 수 있습니다.)</Checkbox>
+          </Form.Item>
+        </div>
         {Type && Type === "1" && 
           <>
             <div className="flex-box">

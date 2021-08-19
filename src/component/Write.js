@@ -39,7 +39,7 @@ function Write() {
   }, [])
 
 
-  const onsubmit = async (values) => {
+  const onsubmit = async (values) => {    
     let d_regis = getFormatDate(new Date());
     if(values.project_date){
       let date = [];
@@ -50,6 +50,7 @@ function Write() {
     const uid = uuid();
     const getEditor = editorRef.current.getInstance();
     const getHtml = getEditor.getHTML();
+    values.secret = values.secret ? true : false;
     values.emergency = values.emergency ? true : false;
     values.type = Type; 
     const time = new Date().getTime();
@@ -88,7 +89,7 @@ function Write() {
         >
           <Input placeholder="제목" />
         </Form.Item>
-        <div className="flex-box">
+        <div className="flex-box wrap">
           <Form.Item
             name="site"
             style={{width:"100%",maxWidth:"120px",marginRight:"10px"}}
@@ -106,13 +107,17 @@ function Write() {
             name="type"
             onChange={onTypeChange}
           >
-            <Radio.Group defaultValue={Type}>
+            <Radio.Group defaultValue={Type} style={{marginRight:"10px"}}>
               {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") &&
                 <Radio.Button value="0">공지</Radio.Button >
-              }]
+              }
               <Radio.Button value="1">일반</Radio.Button >
               <Radio.Button value="2">프로젝트</Radio.Button >
             </Radio.Group>
+          </Form.Item>
+          <Form.Item             
+            name="secret" valuePropName="checked">
+            <Checkbox>비밀글(작성자 부서와 IT부서만 볼 수 있습니다.)</Checkbox>
           </Form.Item>
         </div>
         {Type && Type === "1" && 

@@ -3,11 +3,15 @@ import { Link } from 'react-router-dom'
 import { Button, Table, Radio, Select, Input, Space } from "antd";
 import * as antIcon from "react-icons/ai";
 import firebase from '../firebase';
-import { OderModalPopup } from './View'
+import { OderModalPopup } from './View';
+import { useSelector } from "react-redux";
+import Loading from "./Loading"
 const { Option } = Select;
 const { Search } = Input;
 
 function Main() {
+  const userInfo = useSelector((state) => state.user.currentUser);
+  const [UserDb, setUserDb] = useState(); 
   const db = firebase.database();
 
   const [WorkList, setWorkList] = useState();
@@ -36,81 +40,109 @@ function Main() {
 
 
   useEffect(() => {
-    db.ref('work_list')
-    .on("value", snapshot => {
-      let arr = [];
-      let searchArr = [];
-      let siteArr = [];
-      snapshot.forEach(el => {
-        const value = el.val();
-        
-        //사이트 필터
-        if(Site && Site === value.site || value.type === "0"){
-          siteArr.push(value)
-        }
-        
-        //검색 
-        if(SearchKey){   
-          if(SearchType === "1" && value.title.includes(SearchKey)){
-            searchArr.push(value)
-          }
-          if(SearchType === "2" && value.content.includes(SearchKey)){
-            searchArr.push(value)
-          }
-          if(SearchType === "3" && (value.content.includes(SearchKey) || value.title.includes(SearchKey))){
-            searchArr.push(value)
-          }
-          if(SearchType === "4" && value.name.includes(SearchKey)){
-            searchArr.push(value)
-          }
-          if(SearchType === "5" && String(value.number).includes(SearchKey)){
-            searchArr.push(value)
-          }
-        }
-        
-        arr.push(value)        
-        
-      });
-      
-      if(Site){
-        arr = siteArr
-      }
-      if(SearchKey){
-        arr = searchArr
-      }
-      arr.map(el=>{
-        if(el.type === "0"){
-          el.index = 0;
-          el.state = "all" 
-        }else if(el.state != "6" && el.emergency){
-          el.index = 1;
-        }else{
-          el.index = 2;
-        }        
-        
-      })
-      //상태 필터
-      if(Sort){
-        if(Sort === "8"){        
-          arr = arr.filter(el => el.state === "0" || el.state === "1" || el.state === "2" || el.state === "3" || el.state === "4" || el.state === "5" || el.state === "all")
-        }else{
-          arr = arr.filter(el => el.state === Sort || el.state === "all")
-        }  
+      let user;
+      if(userInfo){
+        firebase
+        .database()
+        .ref("users")
+        .child(userInfo.uid)
+        .once("value")
+        .then((snapshot) => {
+          user = snapshot.val();
+          setUserDb(snapshot.val());
+          db.ref('work_list')
+          .on("value", snapshot => {
+            let arr = [];
+            let searchArr = [];
+            let siteArr = [];
+            snapshot.forEach(el => {
+              const value = el.val();
+              
+              //사이트 필터
+              if(Site && Site === value.site || value.type === "0"){
+                siteArr.push(value)
+              }
+              
+              //검색 
+              if(SearchKey){   
+                if(SearchType === "1" && value.title.includes(SearchKey)){
+                  searchArr.push(value)
+                }
+                if(SearchType === "2" && value.content.includes(SearchKey)){
+                  searchArr.push(value)
+                }
+                if(SearchType === "3" && (value.content.includes(SearchKey) || value.title.includes(SearchKey))){
+                  searchArr.push(value)
+                }
+                if(SearchType === "4" && value.name.includes(SearchKey)){
+                  searchArr.push(value)
+                }
+                if(SearchType === "5" && String(value.number).includes(SearchKey)){
+                  searchArr.push(value)
+                }
+              }
+              
+              arr.push(value)        
+              
+            });
+            
+            if(Site){
+              arr = siteArr
+            }
+            if(SearchKey){
+              arr = searchArr
+            }
+            arr.map(el=>{        
+              //공지사항,긴급 정렬순서
+              if(el.type === "0"){
+                el.index = 0;
+                el.state = "all" 
+              }else if(el.state != "6" && el.emergency){
+                el.index = 1;
+              }else{
+                el.index = 2;
+              }        
+              
+            })
+    
+            //부서별 게시물구분
+              let temp = [];
+              arr.map(el => {
+                if(el.secret){
+                  if((el.part === user.part) || (user.part === "IT개발부")){
+                    temp.push(el)
+                  }
+                }else{
+                  temp.push(el)
+                }
+              })
+              arr = temp;
+    
+            //상태 필터
+            if(Sort){
+              if(Sort === "8"){        
+                arr = arr.filter(el => el.state === "0" || el.state === "1" || el.state === "2" || el.state === "3" || el.state === "4" || el.state === "5" || el.state === "all")
+              }else{
+                arr = arr.filter(el => el.state === Sort || el.state === "all")
+              }  
+            }
+    
+            arr.sort((a,b) => {
+              return b.timestamp - a.timestamp
+            })
+            
+            arr.sort((a,b) => {
+              return a.index - b.index
+            })
+    
+            setWorkList(arr)
+          })
+        })
       }
 
-      arr.sort((a,b) => {
-        return b.timestamp - a.timestamp
-      })
-      
-      arr.sort((a,b) => {
-        return a.index - b.index
-      })
-
-      setWorkList(arr)
-    })
     return () => {
     }
-  }, [Sort,Rerender,Site])
+  }, [Sort,Site,userInfo])
 
   const stateViewPop = useRef()
   const [StateView, setStateView] = useState(false)
@@ -157,7 +189,7 @@ function Main() {
           row['state'] == '2' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">진행</span>) : 
           row['state'] == '3' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">확인요청</span>) : 
           row['state'] == '4' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">수정요청</span>) : 
-          row['state'] == '5' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">확인완료</span>) : 
+          row['state'] == '5' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt4">확인완료</span>) : 
           row['state'] == '6' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt3">완료</span>) : '';    
         } 
         return data;
@@ -196,7 +228,7 @@ function Main() {
     },
     {
       title: '제목',
-      dataIndex: ['title','uid','emergency','type'],
+      dataIndex: ['title','uid','emergency','type','secret'],
       key: 'title',
       align: 'left',      
       render: (text,row) => {
@@ -204,8 +236,15 @@ function Main() {
         if(row["emergency"]){
           content = <Link className="emergency" to={`/view/${row["uid"]}`}>
             <antIcon.AiOutlineAlert />{row["title"]}</Link>
+          if(row["secret"]){
+            content = <Link className="emergency" to={`/view/${row["uid"]}`}>
+            <antIcon.AiOutlineAlert /><antIcon.AiOutlineLock />{row["title"]}</Link>
+          }
         }else if(row["type"] === "0"){
           content = <Link className="emergency notice" to={`/view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}</Link>
+        }else if(row["secret"]){
+          content = <Link className="secret" to={`/view/${row["uid"]}`}>
+            <antIcon.AiOutlineLock />{row["title"]}</Link>
         }else{
           content = <Link to={`/view/${row["uid"]}`}>{row["title"]}</Link>
         }
@@ -242,22 +281,22 @@ function Main() {
   ]  
   return (
     <>
-      <div className="list-top-filter">
-        <Select
-          labelInValue
-          placeholder="사이트선택"
-          onChange={onSiteChange}
-        >
-          <Option value="">전체</Option>
-          <Option value="미트리">미트리</Option>
-          <Option value="마이오피스">마이오피스</Option>
-          <Option value="마이닭">마이닭</Option>
-          <Option value="기타">기타</Option>
-        </Select>
-        
-      </div>
-      {WorkList && 
+    {WorkList ? (
         <>
+          <div className="list-top-filter">
+            <Select
+              labelInValue
+              placeholder="사이트선택"
+              onChange={onSiteChange}
+            >
+              <Option value="">전체</Option>
+              <Option value="미트리">미트리</Option>
+              <Option value="마이오피스">마이오피스</Option>
+              <Option value="마이닭">마이닭</Option>
+              <Option value="카페">카페</Option>
+              <Option value="기타">기타</Option>
+            </Select>            
+          </div>          
           <Radio.Group className="top-state-radio" onChange={onSortChange} defaultValue={Sort} style={{marginBottom:"15px"}}>
             <Radio.Button value="">전체</Radio.Button>
             <Radio.Button value="8">대기+접수+진행</Radio.Button>
@@ -273,63 +312,68 @@ function Main() {
           className="list-table"
           rowKey={ item => { return item.uid } }
           pagination={{
-            pageSize:10,
+            pageSize:15,
             position:"bottomCenter"
           }}
           align="center" columns={columns} dataSource={WorkList} 
           /> 
+          <OderModalPopup style={{padding:"0"}} className={StateView ? "" : "hidden"} ref={stateViewPop}>
+            {StateViewTxt && 
+            <ul className="log-list" style={{padding:"15px"}}>        
+            {
+              StateViewTxt && StateViewTxt.map((el,idx) => (
+                <li className="flex-box" key={idx}>
+                  <div>
+                    {
+                      el.state === "9" ? (<span className="state-txt9">수정</span>) :
+                      el.state === "0" ? (<span className="state-txt0">대기</span>) :
+                      el.state === "1" ? (<span className="state-txt1">접수</span>) :
+                      el.state === "2" ? (<span className="state-txt2">진행</span>) :
+                      el.state === "3" ? (<span className="state-txt2">확인요청</span>) :
+                      el.state === "4" ? (<span className="state-txt2">수정요청</span>) :
+                      el.state === "5" ? (<span className="state-txt4">확인완료</span>) :
+                      el.state === "6" ? (<span className="state-txt3">완료</span>) : ''
+                    }
+                  </div>
+                  <div>{el.name}({el.part})</div>
+                </li>
+              ))
+            }
+            </ul>
+            }
+          </OderModalPopup>
+          {WorkList && WorkList.length == 0 &&
+            <>
+            <div style={{height:"15px"}}></div>
+            </>
+          }
+          <div className="search-box">
+            <Select
+              defaultValue="1"
+              style={{ marginRight:"5px" }}
+              onChange={onSearchType}
+            >
+              <Option value="1">제목</Option>
+              <Option value="2">내용</Option>
+              <Option value="3">제목+내용</Option>
+              <Option value="4">작성자</Option>
+              <Option value="5">번호</Option>
+            </Select>
+            <Search placeholder="검색어" onSearch={onSearch} enterButton />
+          </div>
+          <div style={{textAlign:"right",marginTop:"15px"}}>
+            <Button className="btn-m-100" type="primary">
+              <Link to="/write">게시물 등록</Link>
+            </Button>
+          </div>
         </>
-      }      
-      <OderModalPopup style={{padding:"0"}} className={StateView ? "" : "hidden"} ref={stateViewPop}>
-        {StateViewTxt && 
-        <ul className="log-list" style={{padding:"15px"}}>        
-        {
-          StateViewTxt && StateViewTxt.map((el,idx) => (
-            <li className="flex-box" key={idx}>
-              <div>
-                {
-                  el.state === "9" ? (<span className="state-txt9">수정</span>) :
-                  el.state === "0" ? (<span className="state-txt0">대기</span>) :
-                  el.state === "1" ? (<span className="state-txt1">접수</span>) :
-                  el.state === "2" ? (<span className="state-txt2">진행</span>) :
-                  el.state === "3" ? (<span className="state-txt2">확인요청</span>) :
-                  el.state === "4" ? (<span className="state-txt2">수정요청</span>) :
-                  el.state === "5" ? (<span className="state-txt2">확인완료</span>) :
-                  el.state === "6" ? (<span className="state-txt3">완료</span>) : ''
-                }
-              </div>
-              <div>{el.name}({el.part})</div>
-            </li>
-          ))
-        }
-        </ul>
-        }
-      </OderModalPopup>
-      {WorkList && WorkList.length == 0 &&
+        )
+      : (
         <>
-        <div style={{height:"15px"}}></div>
+          <Loading style={{position:"absolute"}} />
         </>
-      }
-      <div className="search-box">
-        <Select
-          defaultValue="1"
-          style={{ marginRight:"5px" }}
-          onChange={onSearchType}
-        >
-          <Option value="1">제목</Option>
-          <Option value="2">내용</Option>
-          <Option value="3">제목+내용</Option>
-          <Option value="4">작성자</Option>
-          <Option value="5">번호</Option>
-        </Select>
-        <Search placeholder="검색어" onSearch={onSearch} enterButton />
-      </div>
-      <div style={{textAlign:"right",marginTop:"15px"}}>
-        <Button className="btn-m-100" type="primary">
-          <Link to="/write">게시물 등록</Link>
-        </Button>
-      </div>
-
+      )
+    }  
       
     </>
   )

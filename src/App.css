@@ -113,6 +113,9 @@ i.join-form nput[type="submit"]:hover {
 .flex-box.between {
   justify-content: space-between; }
 
+.flex-box.wrap {
+  flex-wrap: wrap; }
+
 h2.title {
   font-size: 28px;
   margin-bottom: 30px;
@@ -551,6 +554,9 @@ select {
   .call_modify {
     top: 170px !important; } }
 
+.shrink {
+  flex-shrink: 0; }
+
 .state-txt9 {
   font-weight: 700;
   color: #111; }
@@ -571,11 +577,30 @@ select {
   font-weight: 700;
   color: #a1a1a1; }
 
+.state-txt4 {
+  font-weight: 700;
+  color: #22afbd; }
+
 .log-list {
   margin-bottom: 0; }
 
+.log-list li {
+  font-size: 12px;
+  padding-bottom: 5px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #f1f1f1; }
+
 .log-list li > div {
   margin-right: 10px; }
+
+.log-list li .state {
+  width: 50px;
+  text-align: center; }
+
+.log-list li:last-child {
+  border-bottom: none;
+  margin-bottom: 0;
+  padding-bottom: 0; }
 
 .join-form-wrap .input-box {
   position: relative;
@@ -709,6 +734,9 @@ button a svg, button span svg {
 .ant-menu.ant-menu-dark .ant-menu-item-selected, .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
   background: none !important; }
 
+.ant-descriptions-bordered .ant-descriptions-view img {
+  max-width: 100%; }
+
 .list-table td {
   font-size: 13px;
   color: #555; }
@@ -732,6 +760,17 @@ button a svg, button span svg {
 
 .list-table .emergency.notice {
   color: #03aa4e; }
+
+.list-table .secret {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row; }
+
+.list-table .secret svg {
+  margin-right: 3px;
+  width: 18px;
+  height: 18px; }
 
 .list-table .state {
   display: block; }

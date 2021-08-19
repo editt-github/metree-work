@@ -87,6 +87,9 @@ i.join-form nput[type="submit"]:hover {
   &.between {
     justify-content: space-between;
   }
+  &.wrap{
+    flex-wrap: wrap;
+  }
 }
 h2.title {
   font-size: 28px;
@@ -346,6 +349,7 @@ select{
   }
 }
 
+.shrink{flex-shrink: 0;}
 
 // 로그리스트 
 .state-txt9{font-weight: 700; color: #111;}
@@ -353,11 +357,18 @@ select{
 .state-txt1{font-weight: 700; color: #03aa4e;}
 .state-txt2{font-weight: 700; color: rgb(236, 59, 59);}
 .state-txt3{font-weight: 700; color: #a1a1a1;}
+.state-txt4{font-weight: 700; color: #22afbd;}
 .log-list{
   margin-bottom: 0;
   li{
+    font-size: 12px;
     >div{margin-right: 10px;
     }
+    .state{width:50px;text-align: center;
+    }
+    padding-bottom: 5px;margin-bottom: 5px;
+    border-bottom: 1px solid #f1f1f1;
+    &:last-child{border-bottom: none;margin-bottom: 0;padding-bottom: 0;}
   }
 }
 
@@ -454,6 +465,10 @@ button{
 .ant-menu-dark .ant-menu-item-selected > a, .ant-menu-dark .ant-menu-item-selected > span > a, .ant-menu-dark .ant-menu-item-selected > a:hover, .ant-menu-dark .ant-menu-item-selected > span > a:hover{color:rgba(255, 255, 255, 0.65) !important}
 .ant-menu.ant-menu-dark .ant-menu-item-selected, .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected{background: none !important;}
 
+.ant-descriptions-bordered .ant-descriptions-view{
+  img{max-width: 100%;}
+}
+
 // 리스트 
 .list-table{
   td{font-size: 13px;color: #555;
@@ -467,6 +482,10 @@ button{
     &.notice{
       color: #03aa4e;
     }
+  }
+  .secret{
+    @include flex($a:center);
+    svg{margin-right: 3px;width:18px;height: 18px;}
   }
   .state{display: block;}
 }

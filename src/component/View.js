@@ -140,12 +140,6 @@ function View() {
   const onDelete = () => {
     const agree = window.confirm("삭제시 복구가 불가능합니다. 삭제하시겠습니까?");
     if(agree){
-      firebase.database()
-      .ref(`work_list_number`)
-      .child("count")
-      .transaction((pre) => {
-        return pre - 1;
-      });
       firebase.database().ref(`work_list/${match.params.uid}`).remove()
       window.alert("삭제되었습니다.")
       btnToList.current && btnToList.current.click();
@@ -172,7 +166,7 @@ function View() {
                   ViewData.state === "2" ? (<span className="state-txt2">진행</span>) :
                   ViewData.state === "3" ? (<span className="state-txt2">확인요청</span>) :
                   ViewData.state === "4" ? (<span className="state-txt2">수정요청</span>) :
-                  ViewData.state === "5" ? (<span className="state-txt2">확인완료</span>) :
+                  ViewData.state === "5" ? (<span className="state-txt4">확인완료</span>) :
                   ViewData.state === "6" ? (<span className="state-txt3">완료</span>) : ''
                 }   
                 {ViewData.type != "0" && 
@@ -264,7 +258,7 @@ function View() {
                   ViewData.log && ViewData.log.map((el,idx) => (
                     <>
                       <li className="flex-box a-center" key={idx}>
-                        <div>
+                        <div className="state shrink">
                           {
                             el.state === "9" ? (<span className="state-txt9">수정</span>) :
                             el.state === "0" ? (<span className="state-txt0">대기</span>) :
@@ -272,15 +266,15 @@ function View() {
                             el.state === "2" ? (<span className="state-txt2">진행</span>) :
                             el.state === "3" ? (<span className="state-txt2">확인요청</span>) :
                             el.state === "4" ? (<span className="state-txt2">수정요청</span>) :
-                            el.state === "5" ? (<span className="state-txt2">확인완료</span>) :
+                            el.state === "5" ? (<span className="state-txt4">확인완료</span>) :
                             el.state === "6" ? (<span className="state-txt3">완료</span>) : ''
                           }
                         </div>
-                        <div style={{fontSize:"12px",color:"#888"}}>
+                        <div className="shrink" style={{color:"#888"}}>
                           {`${el.date.full_} ${el.date.hour}:${el.date.min}`}
                         </div>
-                        <div style={{fontSize:"13px",color:"#555"}}>{el.name}({el.part})</div>
-                        <div style={{fontSize:"13px",color:"#333",fontWeight:"600"}}>{el.desc ? el.desc : ""}</div>
+                        <div className="shrink part" style={{color:"#555"}}>{el.name}({el.part})</div>
+                        <div style={{color:"#333",fontWeight:"600"}}>{el.desc ? el.desc : ""}</div>
                       </li>
                     </>
                   ))
