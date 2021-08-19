@@ -737,6 +737,9 @@ button a svg, button span svg {
 .ant-descriptions-bordered .ant-descriptions-view img {
   max-width: 100%; }
 
+.ant-descriptions-bordered .ant-descriptions-item-label {
+  min-width: 105px; }
+
 .list-table td {
   font-size: 13px;
   color: #555; }
@@ -820,7 +823,13 @@ button a svg, button span svg {
     border-width: 1px;
     margin-left: -1px;
     margin-top: -1px;
-    font-size: 12px; } }
+    font-size: 12px; }
+  .ant-descriptions-bordered .ant-descriptions-item-label {
+    min-width: 77px; }
+  .nav-top-box .log-in {
+    line-height: 1.5; }
+  .log-list li {
+    flex-wrap: wrap; } }
 
 .ani-fadeup {
   animation: fade_up 0.6s both; }

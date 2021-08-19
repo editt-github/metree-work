@@ -469,6 +469,10 @@ button{
   img{max-width: 100%;}
 }
 
+.ant-descriptions-bordered .ant-descriptions-item-label{
+  min-width: 105px;
+}
+
 // 리스트 
 .list-table{
   td{font-size: 13px;color: #555;
@@ -521,6 +525,20 @@ button{
     @include flex();flex-wrap: wrap;
     margin-left: 1px;margin-top:5px;
     label{width:33.33%;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;border-width: 1px;margin-left: -1px;margin-top: -1px;font-size: 12px;}
+  }
+
+  .ant-descriptions-bordered .ant-descriptions-item-label{
+    min-width: 77px;
+  }
+
+  .nav-top-box{
+    .log-in{line-height: 1.5;}
+  }
+  
+
+
+  .log-list{
+    li{flex-wrap: wrap;}
   }
 
   

@@ -9,7 +9,7 @@ import Loading from "./Loading"
 const { Option } = Select;
 const { Search } = Input;
 
-function Main() {
+function MyList() {
   const userInfo = useSelector((state) => state.user.currentUser);
   const [UserDb, setUserDb] = useState(); 
   const db = firebase.database();
@@ -34,7 +34,6 @@ function Main() {
 
   const [SearchKey, setSearchKey] = useState()
   const onSearch = (e) => {
-    console.log(e)
     setSearchKey(e)
     setRerender(!Rerender)
   }
@@ -64,7 +63,6 @@ function Main() {
                 siteArr.push(value)
               }
               
-
               //검색 
               if(SearchKey){   
                 if(SearchType === "1" && value.title.includes(SearchKey)){
@@ -106,19 +104,22 @@ function Main() {
               }        
               
             })
+
+            //내 게시물 체크 
+            arr = arr.filter(el => el.user_uid === userInfo.uid)
     
             //부서별 게시물구분
-            let temp = [];
-            arr.map(el => {
-              if(el.secret){
-                if((el.part === user.part) || (user.part === "IT개발부")){
+              let temp = [];
+              arr.map(el => {
+                if(el.secret){
+                  if((el.part === user.part) || (user.part === "IT개발부")){
+                    temp.push(el)
+                  }
+                }else{
                   temp.push(el)
                 }
-              }else{
-                temp.push(el)
-              }
-            })
-            arr = temp;
+              })
+              arr = temp;
             
     
             //상태 필터
@@ -358,7 +359,7 @@ function Main() {
             <div style={{height:"15px"}}></div>
             </>
           }
-          <div className="search-box">            
+          <div className="search-box">
             <Select
               defaultValue="1"
               style={{ marginRight:"5px" }}
@@ -391,4 +392,4 @@ function Main() {
   )
 }
 
-export default Main
+export default MyList

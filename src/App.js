@@ -18,6 +18,7 @@ import Write from "./component/Write";
 import Modify from "./component/Modify";
 import View from "./component/View";
 import Join from "./component/Join";
+import MyList from "./component/MyList";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -87,28 +88,28 @@ function App() {
                 </>
               ):(
                 <>
-                  <span style={{color:"#fff"}}>
-                    {currentUser.displayName}님 반갑습니다.
-                  </span>
-                  <span
-                    onClick={onLogout}
-                    className="p-color-l"
-                    style={{
-                      cursor: "pointer",
-                      marginLeft: "10px",
-                    }}
-                  >
-                    logout
-                  </span>
+                  <div className="log-in">
+                    <span style={{color:"#fff"}}>
+                      {currentUser.displayName}님 반갑습니다.
+                    </span>
+                    <span
+                      onClick={onLogout}
+                      className="p-color-l"
+                      style={{
+                        cursor: "pointer",
+                        marginLeft: "10px",
+                      }}
+                    >
+                      logout
+                    </span>
+                  </div>
                 </>
               )}
             </div>
-            {(UserDb && UserDb.role > 2) || (UserDb && UserDb.auth && UserDb.auth.includes('it')) &&
             <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
               <Menu.Item key="1"><Link to="/"><antIcon.AiOutlineHome style={{position:"relative",top:"3px"}} /> Home</Link></Menu.Item>
-              {/* <Menu.Item key="9">Admin</Menu.Item> */}
+              <Menu.Item key="2"><Link to="/mylist"><antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> My List</Link></Menu.Item>
             </Menu>
-            }
           </div>
         </Header> 
         <Content className="content-box layout">
@@ -119,6 +120,7 @@ function App() {
             <Route exact path="/write" component={Write} />
             <Route exact path="/modify/:uid" component={Modify} />
             <Route exact path="/view/:uid" component={View} />
+            <Route exact path="/mylist" component={MyList} />
           </Switch>
         </Content>
       </Layout>

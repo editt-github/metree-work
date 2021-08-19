@@ -252,7 +252,10 @@ function View() {
                 <div dangerouslySetInnerHTML={contentDesc()}></div>
             </Descriptions.Item>
             {ViewData.type != "0" &&
-            <Descriptions.Item label="상태기록" span={4}>
+            <Descriptions.Item 
+              label={"상태기록"} 
+              span={4} 
+            >
               <ul className="log-list">
                 {
                   ViewData.log && ViewData.log.map((el,idx) => (
@@ -285,7 +288,10 @@ function View() {
           </Descriptions>
           <div className="view-btn-box">
             <Button>
-              <Link ref={btnToList} to="/"><antIcon.AiOutlineBars />목록</Link>
+              <Link ref={btnToList} to="/"><antIcon.AiOutlineBars />전체목록</Link>
+            </Button> 
+            <Button>
+              <Link to="/mylist"><antIcon.AiOutlineBars />내 목록</Link>
             </Button> 
             {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") && (ViewData.og_content !== ViewData.content) &&
               <Button onClick={onOgContent}>{!OgContent ? <><antIcon.AiOutlineSwap />원본보기</> : <><antIcon.AiOutlineSwap />수정본보기</> }

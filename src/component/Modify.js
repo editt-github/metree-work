@@ -206,6 +206,9 @@ function Modify() {
             <Link to="/"><antIcon.AiOutlineBars />목록</Link>
           </Button>
           <Button style={{marginRight:"5px"}}>
+            <Link to="/mylist"><antIcon.AiOutlineBars />내 목록</Link>
+          </Button> 
+          <Button style={{marginRight:"5px"}}>
             <Link ref={btnToView} to={`/view/${match.params.uid}`}><antIcon.AiOutlineRollback />게시물로</Link>
           </Button>
           <Button type="primary" htmlType="submit">확인</Button>
