@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Table, Radio, Select, Input, Switch } from "antd";
 import * as antIcon from "react-icons/ai";
+import { notify } from "./CommonFunc";
 import firebase from '../firebase';
 import { OderModalPopup } from './View';
 import { useSelector } from "react-redux";
@@ -64,7 +65,6 @@ function Main() {
                 siteArr.push(value)
               }
               
-
               //검색 
               if(SearchKey){   
                 if(SearchType === "1" && value.title.includes(SearchKey)){
@@ -94,7 +94,15 @@ function Main() {
             if(SearchKey){
               arr = searchArr
             }
+
+            let emerCount = 0;
+            let finishCount = 0;
             arr.map(el=>{        
+              //긴급개수
+              el.emergency && el.state === "0" || el.state === "4" && emerCount++;     
+              //완료개수
+              el.state === "3" && el.user_uid === userInfo.uid && finishCount++;
+
               //공지사항,긴급 정렬순서
               if(el.type === "0"){
                 el.index = 0;
@@ -105,7 +113,26 @@ function Main() {
                 el.index = 2;
               }        
               
-            })
+            })      
+            
+            // 긴급알림
+            if(userInfo.photoURL === "IT개발부"){
+              if(emerCount > 0){
+                notify(`확인이 필요한 긴급 게시물이 ${emerCount}개 있습니다.`);
+                document.title = `확인할 긴급 게시물 ${emerCount}개`;
+              }else{
+                document.title = "미트리 IT부서 유지보수"
+              }
+            }else{
+              //완료알림
+              if(finishCount > 0){
+                notify(`확인요청 게시물 ${finishCount}개`);
+                document.title = `확인요청 게시물 ${emerCount}개`;
+              }else{
+                document.title = "미트리 IT부서 유지보수"
+              }
+            }
+
     
             //부서별 게시물구분
             let temp = [];

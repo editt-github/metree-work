@@ -8,11 +8,7 @@ import firebase from './firebase';
 import { useDispatch, useSelector } from "react-redux";
 import { setUser, clearUser } from "./redux/actions/user_action";
 import Login from "./component/Login";
-import {
-  DesktopOutlined,
-  PieChartOutlined,
-  UserOutlined,
-} from '@ant-design/icons';
+import { getNotificationPermission } from "./component/CommonFunc";
 import Main from "./component/Main";
 import Write from "./component/Write";
 import Modify from "./component/Modify";
@@ -24,6 +20,14 @@ const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
 
 function App() {
+  function isDesktopOS(){
+    return ( 'win16|win32|win64|windows|mac|macintel|linux|freebsd|openbsd|sunos'.indexOf(navigator.platform.toLowerCase()) >= 0 ); 
+  }
+
+  if(isDesktopOS()){
+    getNotificationPermission();
+  }
+
   const firebaseUserInfo = firebase.auth().currentUser;
   let name, email, photoUrl, uid, emailVerified;
   if (firebaseUserInfo != null) {
