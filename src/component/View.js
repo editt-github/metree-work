@@ -174,6 +174,15 @@ function View() {
                   <>상태변경</>
                 </Button>          
                 }
+                <div className="state_guide_box">
+                  <button type="button" className="state_guide">?</button>
+                  <div className="guide_box">
+                    <ul>
+                      <li>IT부서에서 작업완료가 되면 확인요청으로 상태변경을 하게됩니다.</li>
+                      <li>확인요청 상태에서 요청자가 확인 후 수정사항이 있으면 수정요청, <br />수정사항이 없으면 확인완료 부탁드립니다.</li>
+                    </ul>
+                  </div>
+                </div>
                 {StatePop && 
                   <OderModalPopup>
                     <div className="flex-box a-center">

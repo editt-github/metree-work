@@ -778,6 +778,49 @@ button a svg, button span svg {
 .list-table .state {
   display: block; }
 
+.state_guide_box {
+  display: inline-block;
+  margin-left: 5px; }
+
+.state_guide_box .state_guide {
+  background: none;
+  border-radius: 50%;
+  padding: 0;
+  width: 22px;
+  height: 22px;
+  border: 1px solid #ccc;
+  font-size: 13px;
+  cursor: pointer; }
+
+.state_guide_box .guide_box {
+  display: none; }
+
+.state_guide_box .guide_box ul {
+  margin-bottom: 0; }
+
+.state_guide_box .guide_box li {
+  position: relative;
+  padding-left: 10px; }
+
+.state_guide_box .guide_box li::before {
+  content: "";
+  display: inline-block;
+  position: absolute;
+  width: 4px;
+  height: 1px;
+  background: #555;
+  left: 0;
+  top: 10px; }
+
+.state_guide_box .state_guide:hover + .guide_box {
+  display: inline-block;
+  position: absolute;
+  background: #fff;
+  padding: 10px;
+  border: 1px solid #e2e2e2;
+  font-size: 12px;
+  white-space: nowrap; }
+
 @media (max-width: 760px) {
   .ant-layout-sider.nav-wrap {
     min-width: 0 !important; }
