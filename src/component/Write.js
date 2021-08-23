@@ -50,6 +50,7 @@ function Write() {
     const uid = uuid();
     const getEditor = editorRef.current.getInstance();
     const getHtml = getEditor.getHTML();
+    values.hidden = values.hidden ? true : false;
     values.secret = values.secret ? true : false;
     values.emergency = values.emergency ? true : false;
     values.type = Type; 
@@ -114,6 +115,10 @@ function Write() {
               <Radio.Button value="1">일반</Radio.Button >
               <Radio.Button value="2">프로젝트</Radio.Button >
             </Radio.Group>
+          </Form.Item>
+          <Form.Item 
+            name="hidden" valuePropName="checked">
+            <Checkbox>숨김</Checkbox>
           </Form.Item>
           <Form.Item             
             name="secret" valuePropName="checked">

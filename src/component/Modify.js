@@ -52,7 +52,6 @@ function Modify() {
   }
 
   const onsubmit = (values) => {
-    
     if(values.project_date){
       let date = [];
       date.push(getFormatDate(values.project_date[0]._d));
@@ -72,10 +71,28 @@ function Modify() {
       values.project_date = null;
     }
     
+    ViewData.project_date = ViewData.project_date ? ViewData.project_date : "";
+    values.project_date = values.project_date ? values.project_date : "";
+    values.content = getHtml;
+    
+    if(
+      ViewData.basic_type === values.basic_type &&
+      ViewData.content === values.content &&
+      ViewData.emergency === values.emergency &&
+      ViewData.hidden === values.hidden &&
+      ViewData.project_date === values.project_date &&
+      ViewData.secret === values.secret &&
+      ViewData.title === values.title &&
+      ViewData.type === values.type
+    ){
+      btnToView.current && btnToView.current.click();
+      return;
+    }
+
+    
     firebase.database().ref(`work_list/${match.params.uid}`)
     .update({
-      ...values,
-      content:getHtml,
+      ...values
     })
 
 // 상태기록
@@ -106,6 +123,7 @@ function Modify() {
       {ViewData &&
       <Form name="dynamic_form_nest_item" className="work-list-form"
       initialValues={{
+        'hidden': ViewData.hidden,
         'emergency': ViewData.emergency,
         'secret': ViewData.secret,
         'basic_type': ViewData.basic_type,
@@ -129,6 +147,10 @@ function Modify() {
               <Radio.Button value="1">일반</Radio.Button >
               <Radio.Button value="2">프로젝트</Radio.Button >
             </Radio.Group>
+          </Form.Item>
+          <Form.Item 
+            name="hidden" valuePropName="checked">
+            <Checkbox>숨김</Checkbox>
           </Form.Item>
           <Form.Item             
             name="secret" valuePropName="checked">

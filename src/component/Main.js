@@ -99,9 +99,12 @@ function Main() {
             let finishCount = 0;
             arr.map(el=>{        
               //긴급개수
-              el.emergency && el.state === "0" || el.state === "4" && emerCount++;     
+              (el.emergency && el.state === "0" || el.state === "4") && emerCount++;     
               //완료개수
-              el.state === "3" && el.user_uid === userInfo.uid && finishCount++;
+              (el.state === "3" && el.user_uid === userInfo.uid) && finishCount++;
+
+              //숨김체크
+              el.hidden = el.hidden ? el.hidden : false;              
 
               //공지사항,긴급 정렬순서
               if(el.type === "0"){
@@ -113,8 +116,8 @@ function Main() {
                 el.index = 2;
               }        
               
-            })      
-            
+            })    
+            arr = arr.filter(el=>el.hidden != true);
             // 긴급알림
             if(userInfo.photoURL === "IT개발부"){
               if(emerCount > 0){
@@ -127,7 +130,7 @@ function Main() {
               //완료알림
               if(finishCount > 0){
                 notify(`확인요청 게시물 ${finishCount}개`);
-                document.title = `확인요청 게시물 ${emerCount}개`;
+                document.title = `확인요청 게시물 ${finishCount}개`;
               }else{
                 document.title = "미트리 IT부서 유지보수"
               }

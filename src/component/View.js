@@ -73,8 +73,7 @@ function View() {
     }
     
     firebase.database().ref(`work_list/${match.params.uid}`)
-    .once("value")
-    .then(snapshot => {
+    .on("value",snapshot => {
       setViewData(snapshot.val())
     })
     return () => {
