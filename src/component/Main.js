@@ -12,7 +12,6 @@ const { Search } = Input;
 
 function Main() {
   const userInfo = useSelector((state) => state.user.currentUser);
-  const [UserDb, setUserDb] = useState(); 
   const db = firebase.database();
 
   const [WorkList, setWorkList] = useState();
@@ -35,141 +34,130 @@ function Main() {
 
   const [SearchKey, setSearchKey] = useState()
   const onSearch = (e) => {
-    console.log(e)
     setSearchKey(e)
     setRerender(!Rerender)
   }
 
 
   useEffect(() => {
-      let user;
-      if(userInfo){
-        firebase
-        .database()
-        .ref("users")
-        .child(userInfo.uid)
-        .once("value")
-        .then((snapshot) => {
-          user = snapshot.val();
-          setUserDb(snapshot.val());
-          db.ref('work_list')
-          .on("value", snapshot => {
-            let arr = [];
-            let searchArr = [];
-            let siteArr = [];
-            snapshot.forEach(el => {
-              const value = el.val();
-              
-              //사이트 필터
-              if(Site && Site === value.site || value.type === "0"){
-                siteArr.push(value)
-              }
-              
-              //검색 
-              if(SearchKey){   
-                if(SearchType === "1" && value.title.includes(SearchKey)){
-                  searchArr.push(value)
-                }
-                if(SearchType === "2" && value.content.includes(SearchKey)){
-                  searchArr.push(value)
-                }
-                if(SearchType === "3" && (value.content.includes(SearchKey) || value.title.includes(SearchKey))){
-                  searchArr.push(value)
-                }
-                if(SearchType === "4" && value.name.includes(SearchKey)){
-                  searchArr.push(value)
-                }
-                if(SearchType === "5" && String(value.number).includes(SearchKey)){
-                  searchArr.push(value)
-                }
-              }
-              
-              arr.push(value)        
-              
-            });
+      if(userInfo){        
+        db.ref('work_list')
+        .on("value", snapshot => {
+          let arr = [];
+          let searchArr = [];
+          let siteArr = [];
+          snapshot.forEach(el => {
+            const value = el.val();
             
-            if(Site){
-              arr = siteArr
+            //사이트 필터
+            if(Site && Site === value.site || value.type === "0"){
+              siteArr.push(value)
             }
-            if(SearchKey){
-              arr = searchArr
-            }
-
-            let emerCount = 0;
-            let finishCount = 0;
-            arr.map(el=>{        
-              //긴급개수
-              (el.emergency && el.state === "0" || el.state === "4") && emerCount++;     
-              //완료개수
-              (el.state === "3" && el.user_uid === userInfo.uid) && finishCount++;
-
-              //숨김체크
-              el.hidden = el.hidden ? el.hidden : false;              
-
-              //공지사항,긴급 정렬순서
-              if(el.type === "0"){
-                el.index = 0;
-                el.state = "all" 
-              }else if(el.state != "6" && el.emergency){
-                el.index = 1;
-              }else{
-                el.index = 2;
-              }        
-              
-            })    
-            arr = arr.filter(el=>el.hidden != true);
-            // 긴급알림
-            if(userInfo.photoURL === "IT개발부"){
-              if(emerCount > 0){
-                notify(`확인이 필요한 긴급 게시물이 ${emerCount}개 있습니다.`);
-                document.title = `확인할 긴급 게시물 ${emerCount}개`;
-              }else{
-                document.title = "미트리 IT부서 유지보수"
+            
+            //검색 
+            if(SearchKey){   
+              if(SearchType === "1" && value.title.includes(SearchKey)){
+                searchArr.push(value)
               }
+              if(SearchType === "2" && value.content.includes(SearchKey)){
+                searchArr.push(value)
+              }
+              if(SearchType === "3" && (value.content.includes(SearchKey) || value.title.includes(SearchKey))){
+                searchArr.push(value)
+              }
+              if(SearchType === "4" && value.name.includes(SearchKey)){
+                searchArr.push(value)
+              }
+              if(SearchType === "5" && String(value.number).includes(SearchKey)){
+                searchArr.push(value)
+              }
+            }
+            
+            arr.push(value)        
+            
+          });
+          
+          if(Site){
+            arr = siteArr
+          }
+          if(SearchKey){
+            arr = searchArr
+          }
+
+          let emerCount = 0;
+          let finishCount = 0;
+          arr.map(el=>{        
+            //긴급개수
+            (el.emergency && el.state === "0" || el.state === "4") && emerCount++;     
+            //완료개수
+            (el.state === "3" && el.user_uid === userInfo.uid) && finishCount++;
+
+            //숨김체크
+            el.hidden = el.hidden ? el.hidden : false;              
+
+            //공지사항,긴급 정렬순서
+            if(el.type === "0"){
+              el.index = 0;
+              el.state = "all" 
+            }else if(el.state != "6" && el.emergency){
+              el.index = 1;
             }else{
-              //완료알림
-              if(finishCount > 0){
-                notify(`확인요청 게시물 ${finishCount}개`);
-                document.title = `확인요청 게시물 ${finishCount}개`;
-              }else{
-                document.title = "미트리 IT부서 유지보수"
-              }
+              el.index = 2;
+            }        
+            
+          })    
+          arr = arr.filter(el=>el.hidden != true);
+          // 긴급알림
+          if(userInfo.photoURL === "IT개발부"){
+            if(emerCount > 0){
+              notify(`확인이 필요한 긴급 게시물이 ${emerCount}개 있습니다.`);
+              document.title = `확인할 긴급 게시물 ${emerCount}개`;
+            }else{
+              document.title = "미트리 IT부서 유지보수"
             }
+          }else{
+            //완료알림
+            if(finishCount > 0){
+              notify(`확인요청 게시물 ${finishCount}개`);
+              document.title = `확인요청 게시물 ${finishCount}개`;
+            }else{
+              document.title = "미트리 IT부서 유지보수"
+            }
+          }
 
-    
-            //부서별 게시물구분
-            let temp = [];
-            arr.map(el => {
-              if(el.secret){
-                if((el.part === user.part) || (user.part === "IT개발부")){
-                  temp.push(el)
-                }
-              }else{
+  
+          //부서별 게시물구분
+          let temp = [];
+          arr.map(el => {
+            if(el.secret){
+              if((el.part === userInfo.photoURL) || (userInfo.photoURL === "IT개발부")){
                 temp.push(el)
               }
-            })
-            arr = temp;
-            
-    
-            //상태 필터
-            if(Sort){
-              if(Sort === "8"){        
-                arr = arr.filter(el => el.state === "0" || el.state === "1" || el.state === "2" || el.state === "3" || el.state === "4" || el.state === "5" || el.state === "all")
-              }else{
-                arr = arr.filter(el => el.state === Sort || el.state === "all")
-              }  
+            }else{
+              temp.push(el)
             }
-    
-            arr.sort((a,b) => {
-              return b.timestamp - a.timestamp
-            })
-            
-            arr.sort((a,b) => {
-              return a.index - b.index
-            })
-    
-            setWorkList(arr)
           })
+          arr = temp;
+          
+  
+          //상태 필터
+          if(Sort){
+            if(Sort === "8"){        
+              arr = arr.filter(el => el.state === "0" || el.state === "1" || el.state === "2" || el.state === "3" || el.state === "4" || el.state === "5" || el.state === "all")
+            }else{
+              arr = arr.filter(el => el.state === Sort || el.state === "all")
+            }  
+          }
+  
+          arr.sort((a,b) => {
+            return b.timestamp - a.timestamp
+          })
+          
+          arr.sort((a,b) => {
+            return a.index - b.index
+          })
+  
+          setWorkList(arr)
         })
       }
 

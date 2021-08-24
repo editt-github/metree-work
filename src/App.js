@@ -38,31 +38,31 @@ function App() {
     uid = firebaseUserInfo.uid; 
   }
   const currentUser = useSelector((state) => state.user.currentUser);
-  const [UserDb, setUserDb] = useState();
 
   let history = useHistory();
   let dispatch = useDispatch();
   const isLoading = useSelector((state) => state.user.isLoading);
-  useEffect(() => {
-    if(currentUser){
-      firebase
-      .database()
-      .ref("users")
-      .child(currentUser.uid)
-      .once("value", (snapshot) => {
-        setUserDb(snapshot.val());
-      });
-    }
-    return () => {
-      setUserDb()
-    }
-  }, [currentUser])
+
   useEffect(() => {
     
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
-        history.push("/");
-        dispatch(setUser(user));
+        firebase
+        .database()
+        .ref("users")
+        .child(user.uid)
+        .once("value", (snapshot) => {
+          let addInfo = {
+            ...user,
+            auth:snapshot.val().auth,
+            call_number:snapshot.val().call_number,
+            favorite:snapshot.val().favorite,
+            role:snapshot.val().role,
+            sosok:snapshot.val().sosok,
+          }
+          history.push("/");
+          dispatch(setUser(addInfo));
+        });
       } else {
         history.push("/login");
         dispatch(clearUser());

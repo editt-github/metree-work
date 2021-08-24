@@ -11,7 +11,6 @@ const { Search } = Input;
 
 function MyList() {
   const userInfo = useSelector((state) => state.user.currentUser);
-  const [UserDb, setUserDb] = useState(); 
   const db = firebase.database();
 
   const [WorkList, setWorkList] = useState();
@@ -40,16 +39,7 @@ function MyList() {
 
 
   useEffect(() => {
-      let user;
-      if(userInfo){
-        firebase
-        .database()
-        .ref("users")
-        .child(userInfo.uid)
-        .once("value")
-        .then((snapshot) => {
-          user = snapshot.val();
-          setUserDb(snapshot.val());
+      if(userInfo){        
           db.ref('work_list')
           .on("value", snapshot => {
             let arr = [];
@@ -112,7 +102,7 @@ function MyList() {
               let temp = [];
               arr.map(el => {
                 if(el.secret){
-                  if((el.part === user.part) || (user.part === "IT개발부")){
+                  if((el.part === userInfo.photoURL) || (userInfo.photoURL === "IT개발부")){
                     temp.push(el)
                   }
                 }else{
@@ -141,7 +131,6 @@ function MyList() {
     
             setWorkList(arr)
           })
-        })
       }
 
     return () => {

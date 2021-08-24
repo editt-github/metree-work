@@ -14,7 +14,6 @@ const { RangePicker } = DatePicker;
 
 function Write() {
   const userInfo = useSelector((state) => state.user.currentUser);
-  const [UserDb, setUserDb] = useState();  
   const editorRef = React.useRef();
   const btnToList = React.useRef();
 
@@ -25,15 +24,7 @@ function Write() {
   }
 
   useEffect(() => {
-    if(userInfo){
-      firebase
-      .database()
-      .ref("users")
-      .child(userInfo.uid)
-      .once("value", (snapshot) => {
-        setUserDb(snapshot.val());
-      });
-    }
+
     return () => {      
     }
   }, [])
@@ -74,7 +65,7 @@ function Write() {
       d_regis:d_regis,
       state:"0",
       uid:uid,
-      name:UserDb.name,
+      name:userInfo.name,
       part:userInfo.photoURL,
       timestamp:time,
       user_uid:userInfo.uid
@@ -109,7 +100,7 @@ function Write() {
             onChange={onTypeChange}
           >
             <Radio.Group defaultValue={Type} style={{marginRight:"10px"}}>
-              {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") &&
+              {(userInfo && userInfo.role > 2 || userInfo && userInfo.auth && userInfo.auth === "it") &&
                 <Radio.Button value="0">공지</Radio.Button >
               }
               <Radio.Button value="1">일반</Radio.Button >

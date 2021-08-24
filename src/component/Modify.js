@@ -14,23 +14,14 @@ const { RangePicker } = DatePicker;
 
 function Modify() {
   const match = useRouteMatch("/modify/:uid");
-  const userInfo = useSelector((state) => state.user.currentUser);
-  const [UserDb, setUserDb] = useState();  
+  const userInfo = useSelector((state) => state.user.currentUser); 
   const editorRef = React.useRef();
   const btnToView = React.useRef();
   const [Type, setType] = useState()
 
   const [ViewData, setViewData] = useState();
   useEffect(() => {
-    if(userInfo){
-      firebase
-      .database()
-      .ref("users")
-      .child(userInfo.uid)
-      .once("value", (snapshot) => {
-        setUserDb(snapshot.val());
-      });
-    }
+
     firebase.database().ref(`work_list/${match.params.uid}`)
     .once("value")
     .then(snapshot => {
@@ -141,7 +132,7 @@ function Modify() {
             onChange={onTypeChange}
           >
             <Radio.Group defaultValue={ViewData.type} style={{marginRight:"10px"}}>
-              {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") &&
+              {(userInfo && userInfo.role > 2 || userInfo && userInfo.auth && userInfo.auth === "it") &&
                 <Radio.Button value="0">공지</Radio.Button >
               }
               <Radio.Button value="1">일반</Radio.Button >

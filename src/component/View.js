@@ -56,21 +56,11 @@ function View() {
   const btnToList = useRef();
   const btnToModify = useRef();
   const stateSel = useRef();
-  const [UserDb, setUserDb] = useState();  
   const match = useRouteMatch("/view/:uid");
   const [ViewData, setViewData] = useState();
   const [Rerender, setRerender] = useState(false);
 
   useEffect(() => {
-    if(userInfo){
-      firebase
-      .database()
-      .ref("users")
-      .child(userInfo.uid)
-      .once("value", (snapshot) => {
-        setUserDb(snapshot.val());
-      });
-    }
     
     firebase.database().ref(`work_list/${match.params.uid}`)
     .on("value",snapshot => {
@@ -301,7 +291,7 @@ function View() {
             <Button>
               <Link to="/mylist"><antIcon.AiOutlineBars />내 목록</Link>
             </Button> 
-            {(UserDb && UserDb.role) > 2 || (UserDb && UserDb.auth && UserDb.auth === "it") && (ViewData.og_content !== ViewData.content) &&
+            {(userInfo && userInfo.role > 2 || userInfo && userInfo.auth && userInfo.auth === "it") && (ViewData.og_content !== ViewData.content) &&
               <Button onClick={onOgContent}>{!OgContent ? <><antIcon.AiOutlineSwap />원본보기</> : <><antIcon.AiOutlineSwap />수정본보기</> }
               </Button>  
             }  
@@ -312,7 +302,7 @@ function View() {
               </Button>
             }
             {
-              (UserDb && UserDb.role) > 2 || (ViewData.user_uid === userInfo.uid) &&
+              (userInfo && userInfo.role > 2 || ViewData.user_uid === userInfo.uid) &&
               <Button onClick={onDelete}>
                 <><antIcon.AiOutlineDelete />삭제</>
               </Button>
