@@ -121,6 +121,7 @@ select{
   border-color: $bd-color;height: 32px;
 }
 
+.btn-init{border: none;background: none;padding: 0;cursor: pointer;font-size: 0;}
 
 .nav-top-box{padding: 15px;display: inline-block;width: 230px;}
 .ant-layout-sider-collapsed{
@@ -369,6 +370,7 @@ select{
     padding-bottom: 5px;margin-bottom: 5px;
     border-bottom: 1px solid #f1f1f1;
     &:last-child{border-bottom: none;margin-bottom: 0;padding-bottom: 0;}
+    &.hide{opacity: 0.4;}
   }
 }
 

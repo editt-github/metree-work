@@ -351,7 +351,10 @@ function Main() {
             <ul className="log-list" style={{padding:"15px"}}>        
             {
               StateViewTxt && StateViewTxt.map((el,idx) => (
-                <li className="flex-box" key={idx}>
+                <li className={
+                  el.hidden && userInfo.auth && userInfo.auth.includes("it") || el.hidden && userInfo.role > 2 ? `hide flex-box a-center` : 
+                  el.hidden ? `hidden flex-box a-center` :
+                  `flex-box a-center`} key={idx}>
                   <div>
                     {
                       el.state === "9" ? (<span className="state-txt9">수정</span>) :

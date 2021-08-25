@@ -138,6 +138,19 @@ function View() {
   const onModify = () => {
     btnToModify.current && btnToModify.current.click();
   }
+
+  const onLogHidden = (idx) => {
+    firebase.database().ref(`work_list/${match.params.uid}/log/${idx}`)
+    .transaction((pre) => {
+      let res = pre;
+      res.hidden = res.hidden ? false : true
+      return res;
+    })
+  }
+  const onLogDelete = (idx) => {
+    const agree = window.confirm('삭제 하시겠습니까?')
+    agree && firebase.database().ref(`work_list/${match.params.uid}/log/${idx}`).remove()
+  }
   return (
     <>
       {ViewData &&
@@ -258,7 +271,21 @@ function View() {
                 {
                   ViewData.log && ViewData.log.map((el,idx) => (
                     <>
-                      <li className="flex-box a-center" key={idx}>
+                      <li className={
+                        el.hidden && userInfo.auth && userInfo.auth.includes("it") || el.hidden && userInfo.role > 2 ? `hide flex-box a-center` : 
+                        el.hidden ? `hidden flex-box a-center` :
+                        `flex-box a-center`}
+                       key={idx}>
+                        {(userInfo && userInfo.role > 2 || userInfo && userInfo.auth && userInfo.auth === "it") && 
+                          <>
+                          <button type="button" style={{marginRight:"5px"}} className="btn-init" onClick={()=>onLogHidden(idx)}>
+                            <antIcon.AiOutlineEyeInvisible style={{fontSize:"16px"}} />
+                          </button> 
+                          <button type="button" className="btn-init" onClick={()=>onLogDelete(idx)}>
+                            <antIcon.AiOutlineCloseSquare style={{fontSize:"16px"}} />
+                          </button>  
+                          </>
+                        }  
                         <div className="state shrink">
                           {
                             el.state === "9" ? (<span className="state-txt9">수정</span>) :
@@ -296,7 +323,7 @@ function View() {
               </Button>  
             }  
             {
-              ViewData.user_uid === userInfo.uid &&
+              (userInfo && userInfo.role > 2 || ViewData.user_uid === userInfo.uid) &&
               <Button onClick={onModify}>
                 <Link ref={btnToModify} to={`/modify/${match.params.uid}`}><antIcon.AiOutlineTool />수정</Link>
               </Button>

@@ -145,6 +145,13 @@ select {
   border-color: #e2e2e2;
   height: 32px; }
 
+.btn-init {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0; }
+
 .nav-top-box {
   padding: 15px;
   display: inline-block;
@@ -601,6 +608,9 @@ select {
   border-bottom: none;
   margin-bottom: 0;
   padding-bottom: 0; }
+
+.log-list li.hide {
+  opacity: 0.4; }
 
 .join-form-wrap .input-box {
   position: relative;

@@ -65,7 +65,7 @@ function Write() {
       d_regis:d_regis,
       state:"0",
       uid:uid,
-      name:userInfo.name,
+      name:userInfo.displayName,
       part:userInfo.photoURL,
       timestamp:time,
       user_uid:userInfo.uid

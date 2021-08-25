@@ -43,6 +43,7 @@ function Modify() {
   }
 
   const onsubmit = (values) => {
+
     if(values.project_date){
       let date = [];
       date.push(getFormatDate(values.project_date[0]._d));
@@ -56,6 +57,7 @@ function Modify() {
     values.title === "" && window.alert('제목을 입력해 주세요.')
     values.title = values.title ? values.title : ViewData.title; 
     values.emergency = values.emergency ? true : false;
+    values.hidden = values.hidden ? values.hidden : false;
     values.type = Type ? Type : ViewData.type; 
     values.modify_log = values.modify_log ? values.modify_log : "";
     if(values.type === "1"){
