@@ -38,7 +38,8 @@ function Main() {
     setRerender(!Rerender)
   }
 
-
+  const [EmerCnt, setEmerCnt] = useState(0)
+  const [FinishCnt, setFinishCnt] = useState(0)
   useEffect(() => {
       if(userInfo){        
         db.ref('work_list')
@@ -86,6 +87,7 @@ function Main() {
 
           let emerCount = 0;
           let finishCount = 0;
+
           arr.map(el=>{        
             //긴급개수
             (el.emergency && el.state === "0" || el.state === "4") && emerCount++;     
@@ -106,24 +108,10 @@ function Main() {
             }        
             
           })    
+          setEmerCnt(emerCount)
+          setFinishCnt(finishCount)
           arr = arr.filter(el=>el.hidden != true);
-          // 긴급알림
-          if(userInfo.photoURL === "IT개발부"){
-            if(emerCount > 0){
-              notify(`확인이 필요한 긴급 게시물이 ${emerCount}개 있습니다.`);
-              document.title = `확인할 긴급 게시물 ${emerCount}개`;
-            }else{
-              document.title = "미트리 IT부서 유지보수"
-            }
-          }else{
-            //완료알림
-            if(finishCount > 0){
-              notify(`확인요청 게시물 ${finishCount}개`);
-              document.title = `확인요청 게시물 ${finishCount}개`;
-            }else{
-              document.title = "미트리 IT부서 유지보수"
-            }
-          }
+          
 
   
           //부서별 게시물구분
@@ -164,6 +152,31 @@ function Main() {
     return () => {
     }
   }, [Sort,Site,SearchKey,userInfo])
+
+
+  useEffect(() => {
+    if(userInfo){  
+      // 긴급알림
+      if(userInfo.photoURL === "IT개발부"){
+        if(EmerCnt && EmerCnt > 0){
+          notify(`확인이 필요한 긴급 게시물이 ${EmerCnt}개 있습니다.`);
+          document.title = `확인할 긴급 게시물 ${EmerCnt}개`;
+        }else{
+          document.title = "미트리 IT부서 유지보수"
+        }
+      }else{
+        //완료알림
+        if(FinishCnt && FinishCnt > 0){
+          notify(`확인요청 게시물 ${FinishCnt}개`);
+          document.title = `확인요청 게시물 ${FinishCnt}개`;
+        }else{
+          document.title = "미트리 IT부서 유지보수"
+        }
+      }
+    }
+    return () => {
+    }
+  }, [EmerCnt,FinishCnt])
 
   const stateViewPop = useRef()
   const [StateView, setStateView] = useState(false)
