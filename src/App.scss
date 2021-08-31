@@ -464,8 +464,10 @@ button{
   button:last-child{margin-right: 0;}
 }
 
+/*
 .ant-menu-dark .ant-menu-item-selected > a, .ant-menu-dark .ant-menu-item-selected > span > a, .ant-menu-dark .ant-menu-item-selected > a:hover, .ant-menu-dark .ant-menu-item-selected > span > a:hover{color:rgba(255, 255, 255, 0.65) !important}
 .ant-menu.ant-menu-dark .ant-menu-item-selected, .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected{background: none !important;}
+*/
 
 .ant-descriptions-bordered .ant-descriptions-view{
   img{max-width: 100%;}
@@ -514,6 +516,21 @@ button{
   .state_guide:hover + .guide_box{
     display: inline-block;position: absolute;background: #fff;padding: 10px;border:1px solid $bd-color;font-size: 12px;white-space: nowrap;
   }
+}
+
+
+//탑메뉴
+.ant-menu-dark.ant-menu-horizontal.top-menu{
+  flex:1;
+  @include mobile(){
+    width: 54px;flex:none;
+  }
+}
+
+
+//회원관리팝업
+.user-admin-pop{
+  .ant-form-item-label > label{width:36px}
 }
 
 

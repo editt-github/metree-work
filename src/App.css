@@ -738,12 +738,10 @@ button a svg, button span svg {
 .view-btn-box button:last-child {
   margin-right: 0; }
 
-.ant-menu-dark .ant-menu-item-selected > a, .ant-menu-dark .ant-menu-item-selected > span > a, .ant-menu-dark .ant-menu-item-selected > a:hover, .ant-menu-dark .ant-menu-item-selected > span > a:hover {
-  color: rgba(255, 255, 255, 0.65) !important; }
-
-.ant-menu.ant-menu-dark .ant-menu-item-selected, .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
-  background: none !important; }
-
+/*
+.ant-menu-dark .ant-menu-item-selected > a, .ant-menu-dark .ant-menu-item-selected > span > a, .ant-menu-dark .ant-menu-item-selected > a:hover, .ant-menu-dark .ant-menu-item-selected > span > a:hover{color:rgba(255, 255, 255, 0.65) !important}
+.ant-menu.ant-menu-dark .ant-menu-item-selected, .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected{background: none !important;}
+*/
 .ant-descriptions-bordered .ant-descriptions-view img {
   max-width: 100%; }
 
@@ -830,6 +828,17 @@ button a svg, button span svg {
   border: 1px solid #e2e2e2;
   font-size: 12px;
   white-space: nowrap; }
+
+.ant-menu-dark.ant-menu-horizontal.top-menu {
+  flex: 1; }
+
+@media (max-width: 760px) {
+  .ant-menu-dark.ant-menu-horizontal.top-menu {
+    width: 54px;
+    flex: none; } }
+
+.user-admin-pop .ant-form-item-label > label {
+  width: 36px; }
 
 @media (max-width: 760px) {
   .ant-layout-sider.nav-wrap {

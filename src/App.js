@@ -15,6 +15,7 @@ import Modify from "./component/Modify";
 import View from "./component/View";
 import Join from "./component/Join";
 import MyList from "./component/MyList";
+import UserAdmin from "./component/UserAdmin";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -110,9 +111,14 @@ function App() {
                 </>
               )}
             </div>
-            <Menu theme="dark" mode="horizontal" defaultSelectedKeys={['2']}>
+            <Menu theme="dark" mode="horizontal" className="top-menu">
               <Menu.Item key="1"><Link to="/"><antIcon.AiOutlineHome style={{position:"relative",top:"3px"}} /> Home</Link></Menu.Item>
               <Menu.Item key="2"><Link to="/mylist"><antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> My List</Link></Menu.Item>
+              {(currentUser && currentUser.role > 2 || currentUser && currentUser.auth && currentUser.auth.includes('insa')) &&
+              <Menu.Item key="9"><Link to="/user_admin">
+                <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> User Admin</Link>
+              </Menu.Item>
+              }
             </Menu>
           </div>
         </Header> 
@@ -125,6 +131,7 @@ function App() {
             <Route exact path="/modify/:uid" component={Modify} />
             <Route exact path="/view/:uid" component={View} />
             <Route exact path="/mylist" component={MyList} />
+            <Route exact path="/user_admin" component={UserAdmin} />
           </Switch>
         </Content>
       </Layout>
