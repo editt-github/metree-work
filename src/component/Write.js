@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Link } from "react-router-dom";
 import '@toast-ui/editor/dist/toastui-editor.css';
-import firebase from '../firebase';
+import firebase, {app2} from '../firebase';
 import { Editor } from '@toast-ui/react-editor';
 import { Button, Form, Input, Radio, Select, DatePicker, Checkbox } from 'antd';
 import * as antIcon from "react-icons/ai";
@@ -13,6 +13,7 @@ const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 function Write() {
+  
   const userInfo = useSelector((state) => state.user.currentUser);
   const editorRef = React.useRef();
   const btnToList = React.useRef();
@@ -23,14 +24,8 @@ function Write() {
     setType(type);
   }
 
-  useEffect(() => {
-
-    return () => {      
-    }
-  }, [])
-
-
   const onsubmit = async (values) => {    
+
     let d_regis = getFormatDate(new Date());
     if(values.project_date){
       let date = [];

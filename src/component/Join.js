@@ -30,6 +30,7 @@ function Join() {
         call_number: data.call_number,
         email: data.email,
         role: 0,
+        auth: "intern",
       });
       setLoading(false);
     } catch (error) {

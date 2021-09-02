@@ -3,23 +3,21 @@ import { Link } from 'react-router-dom'
 import { Button, Table, Radio, Select, Input, Switch } from "antd";
 import * as antIcon from "react-icons/ai";
 import { notify } from "./CommonFunc";
-import firebase from '../firebase';
+import firebase, {app2} from '../firebase';
 import { OderModalPopup } from './View';
 import { useSelector } from "react-redux";
 import Loading from "./Loading"
 const { Option } = Select;
 const { Search } = Input;
 
-function Main() {
+function Finish() {
   const userInfo = useSelector((state) => state.user.currentUser);
-  const db = firebase.database();
+  const db = firebase.database(app2);
 
   const [WorkList, setWorkList] = useState();
   const [Rerender, setRerender] = useState(false)
-  const [Sort, setSort] = useState("8")
-  const onSortChange = (e) => {
-    setSort(e.target.value);
-  }
+  const [Sort, setSort] = useState("6")
+
 
   const [Site, setSite] = useState("")
   const onSiteChange = (e) => {
@@ -215,27 +213,6 @@ function Main() {
       render: data => data ? data : ""
     },
     {
-      title: '상태',
-      dataIndex: ['state','log','type'],
-      key: 'state',
-      align: 'center', 
-      width: '80px',     
-      sorter: (a, b) => a.state - b.state,
-      render: (text,row) => {
-        let data;
-        if(row['type'] != "0") {
-          data = row['state'] == '0' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])} className="state state-txt0">대기</span>) : 
-          row['state'] == '1' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt1">접수</span>) : 
-          row['state'] == '2' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">진행</span>) : 
-          row['state'] == '3' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">확인요청</span>) : 
-          row['state'] == '4' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt2">수정요청</span>) : 
-          row['state'] == '5' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt4">확인완료</span>) : 
-          row['state'] == '6' ? (<span onMouseLeave={stateViewClose} onMouseEnter={(e)=>onStateOver(e,row['log'])}  className="state state-txt3">완료</span>) : '';    
-        } 
-        return data;
-      }
-    },
-    {
       title: '사이트',
       dataIndex: 'site',
       key: 'site',
@@ -274,19 +251,19 @@ function Main() {
       render: (text,row) => {
         let content;
         if(row["emergency"]){
-          content = <Link className="emergency" to={`/view/${row["uid"]}`}>
+          content = <Link className="emergency" to={`/finish_view/${row["uid"]}`}>
             <antIcon.AiOutlineAlert />{row["title"]}</Link>
           if(row["secret"]){
-            content = <Link className="emergency" to={`/view/${row["uid"]}`}>
+            content = <Link className="emergency" to={`/finish_view/${row["uid"]}`}>
             <antIcon.AiOutlineAlert /><antIcon.AiOutlineLock />{row["title"]}</Link>
           }
         }else if(row["type"] === "0"){
-          content = <Link className="emergency notice" to={`/view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}</Link>
+          content = <Link className="emergency notice" to={`/finish_view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}</Link>
         }else if(row["secret"]){
-          content = <Link className="secret" to={`/view/${row["uid"]}`}>
+          content = <Link className="secret" to={`/finish_view/${row["uid"]}`}>
             <antIcon.AiOutlineLock />{row["title"]}</Link>
         }else{
-          content = <Link to={`/view/${row["uid"]}`}>{row["title"]}</Link>
+          content = <Link to={`/finish_view/${row["uid"]}`}>{row["title"]}</Link>
         }
         return content
       }
@@ -337,17 +314,7 @@ function Main() {
                 <Option value="카페">카페</Option>
                 <Option value="기타">기타</Option>
               </Select>            
-            </div>          
-            <Radio.Group className="top-state-radio" onChange={onSortChange} defaultValue={Sort} style={{marginRight:"10px"}}>
-              <Radio.Button value="">전체</Radio.Button>
-              <Radio.Button value="8">대기+접수+진행</Radio.Button>
-              <Radio.Button value="0">대기</Radio.Button>
-              <Radio.Button value="1">접수</Radio.Button>
-              <Radio.Button value="2">진행</Radio.Button>
-              <Radio.Button value="3">확인요청</Radio.Button>
-              <Radio.Button value="4">수정요청</Radio.Button>
-              <Radio.Button value="5">확인완료</Radio.Button>
-            </Radio.Group>            
+            </div>                     
           </div>
           <Table 
           className="list-table"
@@ -424,4 +391,4 @@ function Main() {
   )
 }
 
-export default Main
+export default Finish

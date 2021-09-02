@@ -16,6 +16,9 @@ import View from "./component/View";
 import Join from "./component/Join";
 import MyList from "./component/MyList";
 import UserAdmin from "./component/UserAdmin";
+import Test from "./component/Test";
+import Finish from "./component/Finish";
+import FinishView from "./component/FinishView";
 
 const { Header, Content, Footer, Sider } = Layout;
 const { SubMenu } = Menu;
@@ -119,6 +122,16 @@ function App() {
                 <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> User Admin</Link>
               </Menu.Item>
               }
+              {(currentUser && currentUser.role > 2 ||currentUser && currentUser.uid === "HWC2atFlYZfThocHHF7SH4a6MAt2" || currentUser && currentUser.uid === "uwAIDkngLfWjbLaVzyJcaYNi3Qo2") &&
+                <>
+                  <Menu.Item key="99"><Link to="/test">
+                    <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> test</Link>
+                  </Menu.Item>
+                  <Menu.Item key="3"><Link to="/finish">
+                  <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> Finish</Link>
+                </Menu.Item>
+                </>
+              }
             </Menu>
           </div>
         </Header> 
@@ -132,6 +145,9 @@ function App() {
             <Route exact path="/view/:uid" component={View} />
             <Route exact path="/mylist" component={MyList} />
             <Route exact path="/user_admin" component={UserAdmin} />
+            <Route exact path="/finish" component={Finish} />
+            <Route exact path="/finish_view/:uid" component={FinishView} />
+            <Route exact path="/test" component={Test} />
           </Switch>
         </Content>
       </Layout>

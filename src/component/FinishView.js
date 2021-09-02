@@ -52,18 +52,18 @@ export const OderModalPopup = styled.div`
   }
 `;
 
-function View() {
+function FinishView() {
   const userInfo = useSelector((state) => state.user.currentUser);
   const btnToList = useRef();
   const btnToModify = useRef();
   const stateSel = useRef();
-  const match = useRouteMatch("/view/:uid");
+  const match = useRouteMatch("/finish_view/:uid");
   const [ViewData, setViewData] = useState();
   const [Rerender, setRerender] = useState(false);
 
   useEffect(() => {
     
-    firebase.database().ref(`work_list/${match.params.uid}`)
+    firebase.database(app2).ref(`work_list/${match.params.uid}`)
     .on("value",snapshot => {
       setViewData(snapshot.val())
     })
@@ -101,6 +101,20 @@ function View() {
   }
 
   const onStateModify = () => {
+    const stateNum = stateSel.current.value;
+    if(stateNum === "6"){
+      const agree = window.confirm('완료처리 하시겠습니까?');
+      if(agree){
+        let curData = ViewData;
+        curData.state = "6"
+        firebase.database(app2).ref(`work_list/${match.params.uid}`)
+        .update({...curData})
+        firebase.database().ref(`work_list/${match.params.uid}`).remove();
+        window.alert("완료처리 되었습니다.")
+        btnToList.current && btnToList.current.click();
+        return;
+      }
+    }
     let arr = [];
     let obj = {}
     if(ViewData.log){
@@ -115,60 +129,13 @@ function View() {
     }
     arr.push(obj);
 
-    const stateNum = stateSel.current.value;
-    if(stateNum === "6"){
-      const agree = window.confirm('완료처리 하시겠습니까?');
-      if(agree){
-
-        let curData = ViewData;
-        curData.state = "6"
-        curData.log = arr
-
-        let dataContent = ViewData.content;
-        let removeImg = /<IMG(.*?)>/gi;
-        let rmImgData = ViewData.content.replace(removeImg, "") //이미지 제거된 콘텐츠
-        dataContent = dataContent.split('src="')
-        let imgArr = []; // 이미지 url
-        let imgName = []; // 이미지 이름
-        dataContent = dataContent.map((el,idx)=>{
-          console.log(el)
-          if(idx != 0){
-            let url = el.split("\" alt=")[0]
-            imgArr.push(url)
-            imgName.push(`image${idx-1}.png`)
-          }
-        })
-        curData.content = rmImgData;
-        curData.imgName = imgName ? imgName : "";
-
-        axios.post('https://metree.co.kr/_sys/_xml/attr_src.php', {
-          imgList : imgArr ? imgArr : "",
-          uid : curData.uid
-        })
-        .then(res => console.log(res))
-        .catch(function (error) {
-          console.log(error);
-        });
-
-        firebase.database(app2).ref(`work_list/${match.params.uid}`)
-        .update({...curData})
-        firebase.database().ref(`work_list/${match.params.uid}`).remove();
-        window.alert("완료처리 되었습니다.")
-
-        setStatePop(false)        
-        btnToList.current && btnToList.current.click();
-      }
-    }else{
-
-      firebase.database().ref(`work_list/${match.params.uid}`)
-      .update({
-        state:stateSel.current.value,
-        log:arr
-      })
-      setRerender(!Rerender)
-      setStatePop(false)
-    }
-
+    firebase.database(app2).ref(`work_list/${match.params.uid}`)
+    .update({
+      state:stateSel.current.value,
+      log:arr
+    })
+    setRerender(!Rerender)
+    setStatePop(false)
   }
   const onCloseStatePop = () => {
     setStatePop(false);
@@ -177,7 +144,14 @@ function View() {
   const onDelete = () => {
     const agree = window.confirm("삭제시 복구가 불가능합니다. 삭제하시겠습니까?");
     if(agree){
-      firebase.database().ref(`work_list/${match.params.uid}`).remove()
+      if(ViewData.imgName){
+        axios.post('https://metree.co.kr/_sys/_xml/attr_src.php', {
+          uid : ViewData.uid
+        })
+        .then(res=>console.log())
+        .catch(error=>console.log(error))
+      } 
+      firebase.database(app2).ref(`work_list/${match.params.uid}`).remove()
       window.alert("삭제되었습니다.")
       btnToList.current && btnToList.current.click();
     }
@@ -197,7 +171,7 @@ function View() {
   }
   const onLogDelete = (idx) => {
     const agree = window.confirm('삭제 하시겠습니까?')
-    agree && firebase.database().ref(`work_list/${match.params.uid}/log/${idx}`).remove()
+    agree && firebase.database(app2).ref(`work_list/${match.params.uid}/log/${idx}`).remove()
   }
   return (
     <>
@@ -219,11 +193,11 @@ function View() {
                   ViewData.state === "5" ? (<span className="state-txt4">확인완료</span>) :
                   ViewData.state === "6" ? (<span className="state-txt3">완료</span>) : ''
                 }   
-                {ViewData.type != "0" && 
+                {/* {ViewData.type != "0" && 
                 <Button className="has-icon" style={{marginLeft:"5px"}} onClick={onStatePop}>
                   <>상태변경</>
                 </Button>          
-                }
+                } */}
                 <div className="state_guide_box">
                   <button type="button" className="state_guide">?</button>
                   <div className="guide_box">
@@ -243,7 +217,6 @@ function View() {
                         <option value="3">확인요청</option>
                         <option value="4">수정요청</option>
                         <option value="5">확인완료</option>
-                        <option value="6">완료</option>
                       </select>
                       <Input placeholder="기록사항" style={{marginRight:"5px",flex:1}} onChange={onStateInput} />
                     </div>
@@ -308,6 +281,14 @@ function View() {
               )
             }
             <Descriptions.Item label="내용" span={4}>
+                {ViewData.imgName && ViewData.imgName.map((el,idx)=>(
+                  <>
+                    <p>
+                      <img key={idx} src={`https://metree.co.kr/index/_upload/metree_it_work/${ViewData.uid}/${el}`} />
+                    </p>
+                  </>
+                ))
+                }
                 <div dangerouslySetInnerHTML={contentDesc()}></div>
             </Descriptions.Item>
             {ViewData.type != "0" &&
@@ -361,21 +342,18 @@ function View() {
           </Descriptions>
           <div className="view-btn-box">
             <Button>
-              <Link ref={btnToList} to="/"><antIcon.AiOutlineBars />전체목록</Link>
-            </Button> 
-            <Button>
-              <Link to="/mylist"><antIcon.AiOutlineBars />내 목록</Link>
+              <Link ref={btnToList} to="/finish"><antIcon.AiOutlineBars />목록</Link>
             </Button> 
             {(userInfo && userInfo.role > 2 || userInfo && userInfo.auth && userInfo.auth === "it") && (ViewData.og_content !== ViewData.content) &&
               <Button onClick={onOgContent}>{!OgContent ? <><antIcon.AiOutlineSwap />원본보기</> : <><antIcon.AiOutlineSwap />수정본보기</> }
               </Button>  
             }  
-            {
+            {/* {
               (userInfo && userInfo.role > 2 || ViewData.user_uid === userInfo.uid) &&
               <Button onClick={onModify}>
                 <Link ref={btnToModify} to={`/modify/${match.params.uid}`}><antIcon.AiOutlineTool />수정</Link>
               </Button>
-            }
+            } */}
             {
               (userInfo && userInfo.role > 2 || ViewData.user_uid === userInfo.uid) &&
               <Button onClick={onDelete}>
@@ -390,4 +368,4 @@ function View() {
   )
 }
 
-export default View
+export default FinishView
