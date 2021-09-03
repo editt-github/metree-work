@@ -8,9 +8,6 @@ function Test() {
   const [TestData, setTestData] = useState()
   const [TestImg, setTestImg] = useState()
   useEffect(() => {
-
-    axios.get('https://cors-anywhere.herokuapp.com/http://metreeplus.co.kr/index/_upload/metree_it_work/ae0254-ef8c-aa0-8b7e-ee52cae670a')
-    .then(res=>console.log(res))
     
 
     let arr = [];
@@ -23,28 +20,7 @@ function Test() {
       setFinishData(arr)
     })
 
-    firebase.database(app2).ref('work_list/ae0254-ef8c-aa0-8b7e-ee52cae670a')
-    .once("value",data => {
-      let res = data.val().content;
-      
-      let img_tag = /<IMG(.*?)>/gi;
-      let result = res
-      console.log(result)
-      result = result.split('src="')
-      let arr = [];
-      result = result.map((el,idx)=>{
-        if(idx != 0){
-          let url = el.split("\" alt=")[0]
-          arr.push(url)
-        }
-      })
-      console.log(arr)
-      setTestImg(arr);
-      console.log(res.replace(img_tag, ""))
-      
 
-      setTestData(data.val())
-    })
 
     return () => {
       
@@ -62,39 +38,6 @@ function Test() {
       ...val
     })
   }
-  const moveData = () => {
-    firebase.database(app2).ref('work_list')
-    .update({
-      ...FinishData
-    })
-  }
-
-  const delData = () => {
-    firebase.database().ref('work_list')
-    .once("value",data => {
-      data.forEach(el => {
-        if(el.val().state == "6"){
-          firebase.database().ref('work_list').child(el.val().uid).remove()
-        }
-      })
-    })
-  }
-
-  const changeUid = () => {
-    firebase.database(app2).ref('work_list')
-    .once("value",data => {
-      let newDb = {}
-      data.forEach(el => {
-        newDb[el.val().uid] = el.val();
-      })
-      firebase.database(app2).ref('work_list')
-      .update({
-        ...newDb
-      })
-      console.log(newDb)
-    })
-  }
-
 
   const uploadImg = () => {
     axios.post('https://cors-anywhere.herokuapp.com/http://metreeplus.co.kr/_sys/_xml/attr_src.php', {
@@ -128,6 +71,68 @@ function Test() {
     });
   }
 
+
+
+  const changeUid = () => {
+    return;
+    firebase.database(app2).ref('work_list')
+    .once("value",data => {
+      let newDb = []
+      data.forEach(el => {
+
+        let ViewData = el.val();
+        if(!ViewData.imgName){
+          let dataContent = ViewData.content;
+          let removeImg = /<IMG(.*?)>/gi;
+          let rmImgData = ViewData.content.replace(removeImg, "") //이미지 제거된 콘텐츠
+          dataContent = dataContent.split('src="')
+          let imgArr = []; // 이미지 url
+          let imgName = []; // 이미지 이름
+          dataContent = dataContent.map((el,idx)=>{
+            if(idx != 0){
+              let url = el.split("\" alt=")[0]
+              imgArr.push(url)
+              imgName.push(`image${idx-1}.png`)
+            }
+          })
+          ViewData.content = rmImgData;
+          ViewData.imgName = imgName ? imgName : "";
+
+          if(imgArr.length > 0){
+            axios.post('https://metree.co.kr/_sys/_xml/attr_src.php', {
+              imgList : imgArr ? imgArr : "",
+              uid : ViewData.uid
+            })
+            .then(res => console.log(res))
+            .catch(function (error) {
+              console.log(error);
+            });    
+            
+            firebase.database(app2).ref(`work_list/${ViewData.uid}`)
+            .update({...ViewData})
+          }
+          
+        }
+      })
+
+    })
+  }
+
+  const delOgCon = () => {
+    firebase.database(app2).ref('work_list')
+    .once("value",data => {
+      data.forEach(el => {
+        let ViewData = el.val();
+        console.log(ViewData)
+        firebase.database(app2).ref(`work_list/${ViewData.uid}`)
+        .update({
+          ...ViewData,
+          og_content:""
+        })
+      })
+    })
+  }
+
   return (
     <> 
       {TestData &&
@@ -146,9 +151,8 @@ function Test() {
       </Form>
       {FinishData &&
       <>
-      {/* <Button onClick={moveData}>완료옮기기</Button>
-      <Button onClick={delData}>완료삭제</Button>
-      <Button onClick={changeUid}>uid</Button> */}
+      <Button onClick={changeUid}>기존게시물 이미지 이동</Button>
+      <Button onClick={delOgCon}>og콘텐츠삭제</Button>
       </>
       }
     </>

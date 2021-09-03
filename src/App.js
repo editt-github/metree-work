@@ -122,11 +122,13 @@ function App() {
                 <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> User Admin</Link>
               </Menu.Item>
               }
-              {(currentUser && currentUser.role > 2 ||currentUser && currentUser.uid === "HWC2atFlYZfThocHHF7SH4a6MAt2" || currentUser && currentUser.uid === "uwAIDkngLfWjbLaVzyJcaYNi3Qo2") &&
-                <>
+              {(currentUser && currentUser.role > 2 || currentUser && currentUser.uid === "HWC2atFlYZfThocHHF7SH4a6MAt2") && 
                   <Menu.Item key="99"><Link to="/test">
                     <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> test</Link>
                   </Menu.Item>
+              }
+              {(currentUser && currentUser.role > 2 ||currentUser && currentUser.auth && currentUser.auth.includes("it")) &&
+                <>
                   <Menu.Item key="3"><Link to="/finish">
                   <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> Finish</Link>
                 </Menu.Item>

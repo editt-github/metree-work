@@ -7,7 +7,9 @@ import styled from "styled-components";
 import { Select } from 'antd';
 import { useSelector } from "react-redux";
 import { getFormatDate } from './CommonFunc'
+import ReplyBox from './ReplyBox'
 import axios from 'axios';
+import uuid from 'react-uuid'
 const { Option } = Select;
 export const OderModalPopup = styled.div`
   width: auto;
@@ -62,10 +64,19 @@ function View() {
   const [Rerender, setRerender] = useState(false);
 
   useEffect(() => {
-    
     firebase.database().ref(`work_list/${match.params.uid}`)
     .on("value",snapshot => {
-      setViewData(snapshot.val())
+      let replyArr = [];
+      let resData = snapshot.val();
+      if(resData.reply){
+        for(let key in resData.reply){
+          const val = resData.reply[key]
+          replyArr.push(val)
+        }
+      }
+      resData.reply = replyArr
+      console.log(resData)
+      setViewData(resData)
     })
     return () => {
     }
@@ -81,7 +92,6 @@ function View() {
   }
   const [OgContent, setOgContent] = useState(false);
   const onOgContent = () => {
-    console.log(OgContent)
     setOgContent(!OgContent)
   }
 
@@ -131,7 +141,6 @@ function View() {
         let imgArr = []; // 이미지 url
         let imgName = []; // 이미지 이름
         dataContent = dataContent.map((el,idx)=>{
-          console.log(el)
           if(idx != 0){
             let url = el.split("\" alt=")[0]
             imgArr.push(url)
@@ -199,6 +208,21 @@ function View() {
     const agree = window.confirm('삭제 하시겠습니까?')
     agree && firebase.database().ref(`work_list/${match.params.uid}/log/${idx}`).remove()
   }
+
+  const onReplySubmit = (data) => {
+    const uid = uuid();
+    firebase.database().ref(`work_list/${match.params.uid}/reply/${uid}`)
+    .update({
+      name:userInfo.displayName,
+      part:userInfo.photoURL,
+      date:getFormatDate(new Date()),
+      desc:data,
+      uid:uid,
+      user_uid:userInfo.uid,
+      depth:0
+    })
+  }
+
   return (
     <>
       {ViewData &&
@@ -359,6 +383,8 @@ function View() {
             </Descriptions.Item>
             }
           </Descriptions>
+                      
+          <ReplyBox uid={userInfo.uid} ViewData={ViewData} onReplySubmit={onReplySubmit} />
           <div className="view-btn-box">
             <Button>
               <Link ref={btnToList} to="/"><antIcon.AiOutlineBars />전체목록</Link>
@@ -371,7 +397,7 @@ function View() {
               </Button>  
             }  
             {
-              (userInfo && userInfo.role > 2 || ViewData.user_uid === userInfo.uid) &&
+              (userInfo && userInfo.role > 2 || userInfo && userInfo.uid === ViewData.user_uid) &&
               <Button onClick={onModify}>
                 <Link ref={btnToModify} to={`/modify/${match.params.uid}`}><antIcon.AiOutlineTool />수정</Link>
               </Button>

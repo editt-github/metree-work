@@ -893,6 +893,46 @@ button a svg, button span svg {
   .log-list li {
     flex-wrap: wrap; } }
 
+.reply-list {
+  margin-top: 15px; }
+
+.reply-list li {
+  margin-bottom: 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #eee; }
+
+.reply-list li .top {
+  font-size: 12px;
+  color: #999;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row; }
+
+.reply-list li .top .name {
+  font-size: 13px;
+  color: #333;
+  font-weight: 600; }
+
+.reply-list li:first-child {
+  border-top: 1px solid #eee; }
+
+.reply-box {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row; }
+
+.reply-box textarea {
+  height: 100px;
+  margin-right: 10px;
+  overflow: auto; }
+
+.reply-box button {
+  flex: 1;
+  height: 100px; }
+
 .ani-fadeup {
   animation: fade_up 0.6s both; }
 

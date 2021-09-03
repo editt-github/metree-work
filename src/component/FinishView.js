@@ -145,15 +145,20 @@ function FinishView() {
     const agree = window.confirm("삭제시 복구가 불가능합니다. 삭제하시겠습니까?");
     if(agree){
       if(ViewData.imgName){
-        axios.post('https://metree.co.kr/_sys/_xml/attr_src.php', {
+        axios.post('https://metree.co.kr/_sys/_xml/del_src.php', {
           uid : ViewData.uid
         })
-        .then(res=>console.log())
+        .then(res=>{
+          window.alert("삭제되었습니다.");
+          btnToList.current && btnToList.current.click();
+          firebase.database(app2).ref(`work_list/${ViewData.uid}`).remove()
+        })
         .catch(error=>console.log(error))
-      } 
-      firebase.database(app2).ref(`work_list/${match.params.uid}`).remove()
-      window.alert("삭제되었습니다.")
-      btnToList.current && btnToList.current.click();
+      }else{
+        window.alert("삭제되었습니다.");
+        btnToList.current && btnToList.current.click();
+        firebase.database(app2).ref(`work_list/${ViewData.uid}`).remove()
+      }
     }
   }
 
