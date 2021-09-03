@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Button, Input } from 'antd';
 import * as antIcon from "react-icons/ai";
+import firebase from 'firebase';
 const { TextArea } = Input;
 
 function ReplyBox(props) {
@@ -13,6 +14,12 @@ function ReplyBox(props) {
     setReplyTxt()
   }
 
+  const replyDel = (uid) => {
+    const agree = window.confirm("삭제 하시겠습니까?")
+    agree && 
+    firebase.database().ref(`work_list/${props.ViewData.uid}/reply/${uid}`).remove()
+  }
+
   return (
     <>
       {props.ViewData.reply && 
@@ -23,12 +30,13 @@ function ReplyBox(props) {
             <li>
               <div className="top">
                 <span className="name">{el.name}({el.part})</span>
-                <span>{el.date.full_}</span>
-                <span>{el.date.hour}:{el.date.min}</span>
+                <span className="date">
+                  {el.date.full_} {el.date.hour}:{el.date.min}
+                </span>
                 {
                   el.user_uid === props.uid &&
                   <button type="button" className="btn-init">
-                    <antIcon.AiOutlineCloseSquare style={{fontSize:"16px"}} />
+                    <antIcon.AiOutlineCloseSquare onClick={()=>replyDel(el.uid)} style={{fontSize:"16px"}} />
                   </button>  
                 }
               </div>    

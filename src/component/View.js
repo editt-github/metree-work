@@ -383,8 +383,9 @@ function View() {
             </Descriptions.Item>
             }
           </Descriptions>
-                      
-          <ReplyBox uid={userInfo.uid} ViewData={ViewData} onReplySubmit={onReplySubmit} />
+          {userInfo &&            
+            <ReplyBox uid={userInfo.uid} ViewData={ViewData} onReplySubmit={onReplySubmit} />
+          }
           <div className="view-btn-box">
             <Button>
               <Link ref={btnToList} to="/"><antIcon.AiOutlineBars />전체목록</Link>
