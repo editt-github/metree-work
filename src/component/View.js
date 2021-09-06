@@ -73,6 +73,7 @@ function View() {
           const val = resData.reply[key]
           replyArr.push(val)
         }
+        replyArr.sort((a,b)=>a.timestamp-b.timestamp)
       }
       resData.reply = replyArr
       console.log(resData)
@@ -81,6 +82,11 @@ function View() {
     return () => {
     }
   }, [Rerender]);
+
+  const onRerender = () => {
+    setRerender(!Rerender)
+  }
+
   const contentDesc = () => {
     let content;
     if(OgContent){
@@ -219,7 +225,8 @@ function View() {
       desc:data,
       uid:uid,
       user_uid:userInfo.uid,
-      depth:0
+      depth:0,
+      timestamp:new Date().getTime()
     })
   }
 
@@ -384,7 +391,7 @@ function View() {
             }
           </Descriptions>
           {userInfo &&            
-            <ReplyBox uid={userInfo.uid} ViewData={ViewData} onReplySubmit={onReplySubmit} />
+            <ReplyBox onRerender={onRerender} uid={userInfo.uid} ViewData={ViewData} onReplySubmit={onReplySubmit} />
           }
           <div className="view-btn-box">
             <Button>

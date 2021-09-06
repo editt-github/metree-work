@@ -924,6 +924,22 @@ button a svg, button span svg {
 .reply-list li:first-child {
   border-top: 1px solid #eee; }
 
+.reply-list li .desc {
+  position: relative; }
+
+.reply-list li .desc.on {
+  min-height: 90px; }
+
+.reply-list li .desc .modify-box {
+  position: absolute;
+  height: 80px;
+  left: 0;
+  top: 3px; }
+
+.reply-list li .desc .modify-box button {
+  height: 100%;
+  margin-left: 5px; }
+
 .reply-box {
   margin-top: 10px;
   display: flex;
