@@ -41,6 +41,7 @@ function Main() {
   const [EmerCnt, setEmerCnt] = useState(0)
   const [FinishCnt, setFinishCnt] = useState(0)
   useEffect(() => {
+
       if(userInfo){        
         db.ref('work_list')
         .on("value", snapshot => {
@@ -154,6 +155,34 @@ function Main() {
   }, [Sort,Site,SearchKey,userInfo])
 
 
+  const [ReplyCount, setReplyCount] = useState()
+  // 댓글 알림
+  useEffect(() => {
+    firebase.database().ref(`work_list_reply_count`)
+    .on("value",data => {
+      setReplyCount(data.val())
+      firebase.database().ref(`work_list_reply_alarm`)
+      .once("value",res => {
+        let reply = res.val()
+        if(reply.alarm){
+          if(userInfo && userInfo.photoURL === "IT개발부" || userInfo && userInfo.uid === res.writrer){
+            notify(`'${reply.title}'(${reply.number}번 게시물)에 댓글이 추가되었습니다.`);
+            firebase.database().ref(`work_list_reply_alarm`)
+            .update({
+              alarm:false,
+              title:"",
+              number:""
+            })
+          }
+        }
+      })
+    })
+    return () => {
+      firebase.database().ref(`work_list_reply_count`).off()
+    }
+  }, [ReplyCount])
+
+
   useEffect(() => {
     if(userInfo){  
       // 긴급알림
@@ -186,12 +215,14 @@ function Main() {
     let posY = e.clientY;
     setStateViewTxt(log)
     setStateView(true)
+    stateViewPop.current.style.display = "block";
     stateViewPop.current.style.minWidth = "0";
     stateViewPop.current.style.left = (posX+135) + "px";
     stateViewPop.current.style.top = (posY) + "px";
     stateViewPop.current.style.transform = "translate(-50%,-45%)"
   }
   const stateViewClose = () => {
+    stateViewPop.current.style.display = "none";
     setStateView(false)
   }
 

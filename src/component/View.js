@@ -68,15 +68,16 @@ function View() {
     .on("value",snapshot => {
       let replyArr = [];
       let resData = snapshot.val();
-      if(resData.reply){
-        for(let key in resData.reply){
-          const val = resData.reply[key]
-          replyArr.push(val)
+      if(resData){
+        if(resData.reply){
+          for(let key in resData.reply){
+            const val = resData.reply[key]
+            replyArr.push(val)
+          }
+          replyArr.sort((a,b)=>a.timestamp-b.timestamp)
         }
-        replyArr.sort((a,b)=>a.timestamp-b.timestamp)
+        resData.reply = replyArr
       }
-      resData.reply = replyArr
-      console.log(resData)
       setViewData(resData)
     })
     return () => {
@@ -227,6 +228,15 @@ function View() {
       user_uid:userInfo.uid,
       depth:0,
       timestamp:new Date().getTime()
+    })
+    firebase.database().ref(`work_list_reply_count`)
+    .transaction(pre=>pre+1)
+    firebase.database().ref(`work_list_reply_alarm`)
+    .update({
+      alarm:true,
+      title:ViewData.title,
+      number:ViewData.number,
+      writrer:ViewData.user_uid
     })
   }
 

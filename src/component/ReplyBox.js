@@ -35,10 +35,9 @@ function ReplyBox(props) {
     .update({
       ...ModifyData,
       desc:desc
-    });
+    });    
     setModyfyText();
-    setInputModify(false)
-    props.onRerender()
+    setInputModify(false);
   }
 
   const replyDel = (uid) => {

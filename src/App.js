@@ -115,24 +115,20 @@ function App() {
               )}
             </div>
             <Menu theme="dark" mode="horizontal" className="top-menu">
-              <Menu.Item key="1"><Link to="/"><antIcon.AiOutlineHome style={{position:"relative",top:"3px"}} /> Home</Link></Menu.Item>
+              <Menu.Item key="1"><Link to="/"><antIcon.AiOutlineHome style={{position:"relative",top:"3px"}} /> Total</Link></Menu.Item>
               <Menu.Item key="2"><Link to="/mylist"><antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> My List</Link></Menu.Item>
-              {(currentUser && currentUser.role > 2 || currentUser && currentUser.auth && currentUser.auth.includes('insa')) &&
+              {(currentUser && currentUser.role > 2 || currentUser && currentUser.auth && currentUser.auth.includes('insa') || currentUser && currentUser.uid === "HWC2atFlYZfThocHHF7SH4a6MAt2") && 
               <Menu.Item key="9"><Link to="/user_admin">
                 <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> User Admin</Link>
               </Menu.Item>
               }
+              <Menu.Item key="3"><Link to="/finish">
+                <antIcon.AiOutlineFileDone style={{position:"relative",top:"3px"}} /> Finish</Link>
+              </Menu.Item>            
               {(currentUser && currentUser.role > 2 || currentUser && currentUser.uid === "HWC2atFlYZfThocHHF7SH4a6MAt2") && 
                   <Menu.Item key="99"><Link to="/test">
                     <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> test</Link>
                   </Menu.Item>
-              }
-              {(currentUser && currentUser.role > 2 ||currentUser && currentUser.auth && currentUser.auth.includes("it")) &&
-                <>
-                  <Menu.Item key="3"><Link to="/finish">
-                  <antIcon.AiOutlineUser style={{position:"relative",top:"3px"}} /> Finish</Link>
-                </Menu.Item>
-                </>
               }
             </Menu>
           </div>
