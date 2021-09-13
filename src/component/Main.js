@@ -91,7 +91,7 @@ function Main() {
 
           arr.map(el=>{        
             //긴급개수
-            (el.emergency && el.state === "0" || el.state === "4") && emerCount++;     
+            (el.emergency && el.state === "0" || el.emergency && el.state === "4") && emerCount++;     
             //완료개수
             (el.state === "3" && el.user_uid === userInfo.uid) && finishCount++;
 
