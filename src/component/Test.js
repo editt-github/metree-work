@@ -4,6 +4,8 @@ import firebase, {app2} from '../firebase';
 import axios from 'axios';
 
 function Test() {
+
+  const db2 = firebase.database(app2)
   const [FinishData, setFinishData] = useState()
   const [TestData, setTestData] = useState()
   const [TestImg, setTestImg] = useState()
@@ -39,36 +41,18 @@ function Test() {
     })
   }
 
-  const uploadImg = () => {
-    axios.post('https://cors-anywhere.herokuapp.com/http://metreeplus.co.kr/_sys/_xml/attr_src.php', {
-      imgList : TestImg,
-      uid : "ae0254-ef8c-aa0-8b7e-ee52cae670a"
-    })
-    .then(res => console.log(res))
-    .catch(function (error) {
-      console.log(error);
-    });
-  }
+  
 
-  const uploadStorage = () => {
-    Promise.all(
-      // Array of "Promises"
-      TestImg.map(item => upload(item))
-    )
-    .then((url) => {
-      console.log(`All success`,url)
+  const delFinishImg = () => {
+    firebase.database(app2).ref('work_finish_list')
+    .once("value",data => {
+      data.forEach(el=>{
+        firebase.database(app2).ref(`work_finish_list/${el.val().uid}`)
+        .update({
+          og_content:""
+        })
+      })
     })
-    .catch((error) => {
-      console.log(`Some failed: `, error.message)
-    });
-  }
-  const upload = (item) => {    
-    return firebase.storage().ref(`work_list/finish/ae0254-ef8c-aa0-8b7e-ee52cae670a`).putString(item,'data_url')
-    .then(res => {
-      console.log(res)
-    }).catch((error) => {
-      console.log('One failed:', item, error.message)
-    });
   }
 
 
@@ -135,14 +119,7 @@ function Test() {
 
   return (
     <> 
-      {TestData &&
-        <>
-        <div dangerouslySetInnerHTML={contentDesc()}></div>
-        <Button onClick={uploadImg}>upload</Button>
-        <Button onClick={uploadStorage}>스토리지 업로드</Button>
-        <img src="http://metreeplus.co.kr/index/_upload/metree_it_work/ae0254-ef8c-aa0-8b7e-ee52cae670a/image1.png"></img>
-        </>
-      }
+
       <Form onFinish={onSubmit}>
         <Form.Item name="test">
           <Input />
@@ -151,8 +128,9 @@ function Test() {
       </Form>
       {FinishData &&
       <>
-      <Button onClick={changeUid}>기존게시물 이미지 이동</Button>
-      <Button onClick={delOgCon}>og콘텐츠삭제</Button>
+      {/* <Button onClick={changeUid}>기존게시물 이미지 이동</Button>
+      <Button onClick={delOgCon}>og콘텐츠삭제</Button> */}
+      <Button onClick={delFinishImg}>완료글 이미지삭제</Button>
       </>
       }
     </>

@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Button, Table, Radio, Select, Input, Switch } from "antd";
 import * as antIcon from "react-icons/ai";
 import { notify } from "./CommonFunc";
-import firebase from '../firebase';
+import firebase,{app2} from '../firebase';
 import { OderModalPopup } from './View';
 import { useSelector } from "react-redux";
 import Loading from "./Loading"
@@ -12,7 +12,7 @@ const { Search } = Input;
 
 function Main() {
   const userInfo = useSelector((state) => state.user.currentUser);
-  const db = firebase.database();
+  const db = firebase.database(app2);
 
   const [WorkList, setWorkList] = useState();
   const [Rerender, setRerender] = useState(false)
@@ -158,16 +158,16 @@ function Main() {
   const [ReplyCount, setReplyCount] = useState()
   // 댓글 알림
   useEffect(() => {
-    firebase.database().ref(`work_list_reply_count`)
+    firebase.database(app2).ref(`work_list_reply_count`)
     .on("value",data => {
       setReplyCount(data.val())
-      firebase.database().ref(`work_list_reply_alarm`)
+      firebase.database(app2).ref(`work_list_reply_alarm`)
       .once("value",res => {
         let reply = res.val()
         if(reply.alarm){
           if(userInfo && userInfo.photoURL === "IT개발부" || userInfo && userInfo.uid === res.writrer){
             notify(`'${reply.title}'(${reply.number}번 게시물)에 댓글이 추가되었습니다.`);
-            firebase.database().ref(`work_list_reply_alarm`)
+            firebase.database(app2).ref(`work_list_reply_alarm`)
             .update({
               alarm:false,
               title:"",
@@ -178,7 +178,7 @@ function Main() {
       })
     })
     return () => {
-      firebase.database().ref(`work_list_reply_count`).off()
+      firebase.database(app2).ref(`work_list_reply_count`).off()
     }
   }, [ReplyCount])
 

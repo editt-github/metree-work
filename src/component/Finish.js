@@ -40,7 +40,7 @@ function Finish() {
   const [FinishCnt, setFinishCnt] = useState(0)
   useEffect(() => {
       if(userInfo){        
-        db.ref('work_list')
+        db.ref('work_finish_list')
         .on("value", snapshot => {
           let arr = [];
           let searchArr = [];

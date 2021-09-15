@@ -138,7 +138,7 @@ function UserAdmin() {
         </Table>        
         {modifyPop && selUserData &&
           <OderModalPopup className="user-admin-pop"
-           style={{minWidth:"100px",top:PosY,left:PosX,transform:"translate(-115%,-80px)"}}
+           style={{position:"fixed",minWidth:"100px",top:PosY,left:PosX,transform:"translate(-115%,-80px)"}}
           >
             <Form 
               initialValues={{

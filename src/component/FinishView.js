@@ -63,7 +63,7 @@ function FinishView() {
 
   useEffect(() => {
     
-    firebase.database(app2).ref(`work_list/${match.params.uid}`)
+    firebase.database(app2).ref(`work_finish_list/${match.params.uid}`)
     .on("value",snapshot => {
       setViewData(snapshot.val())
     })
@@ -81,7 +81,6 @@ function FinishView() {
   }
   const [OgContent, setOgContent] = useState(false);
   const onOgContent = () => {
-    console.log(OgContent)
     setOgContent(!OgContent)
   }
 
@@ -107,9 +106,9 @@ function FinishView() {
       if(agree){
         let curData = ViewData;
         curData.state = "6"
-        firebase.database(app2).ref(`work_list/${match.params.uid}`)
+        firebase.database(app2).ref(`work_finish_list/${match.params.uid}`)
         .update({...curData})
-        firebase.database().ref(`work_list/${match.params.uid}`).remove();
+        firebase.database(app2).ref(`work_list/${match.params.uid}`).remove();
         window.alert("완료처리 되었습니다.")
         btnToList.current && btnToList.current.click();
         return;
@@ -129,7 +128,7 @@ function FinishView() {
     }
     arr.push(obj);
 
-    firebase.database(app2).ref(`work_list/${match.params.uid}`)
+    firebase.database(app2).ref(`work_finish_list/${match.params.uid}`)
     .update({
       state:stateSel.current.value,
       log:arr
@@ -151,13 +150,13 @@ function FinishView() {
         .then(res=>{
           window.alert("삭제되었습니다.");
           btnToList.current && btnToList.current.click();
-          firebase.database(app2).ref(`work_list/${ViewData.uid}`).remove()
+          firebase.database(app2).ref(`work_finish_list/${ViewData.uid}`).remove()
         })
         .catch(error=>console.log(error))
       }else{
         window.alert("삭제되었습니다.");
         btnToList.current && btnToList.current.click();
-        firebase.database(app2).ref(`work_list/${ViewData.uid}`).remove()
+        firebase.database(app2).ref(`work_finish_list/${ViewData.uid}`).remove()
       }
     }
   }
@@ -167,7 +166,7 @@ function FinishView() {
   }
 
   const onLogHidden = (idx) => {
-    firebase.database().ref(`work_list/${match.params.uid}/log/${idx}`)
+    firebase.database(app2).ref(`work_finish_list/${match.params.uid}/log/${idx}`)
     .transaction((pre) => {
       let res = pre;
       res.hidden = res.hidden ? false : true
@@ -176,7 +175,7 @@ function FinishView() {
   }
   const onLogDelete = (idx) => {
     const agree = window.confirm('삭제 하시겠습니까?')
-    agree && firebase.database(app2).ref(`work_list/${match.params.uid}/log/${idx}`).remove()
+    agree && firebase.database(app2).ref(`work_finish_list/${match.params.uid}/log/${idx}`).remove()
   }
   return (
     <>

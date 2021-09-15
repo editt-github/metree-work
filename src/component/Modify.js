@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useRouteMatch, Link } from "react-router-dom";
 import '@toast-ui/editor/dist/toastui-editor.css';
-import firebase from '../firebase';
+import firebase, {app2} from '../firebase';
 import { Editor } from '@toast-ui/react-editor';
 import { Button, Form, Input, Radio, Select, DatePicker, Checkbox } from 'antd';
 import * as antIcon from "react-icons/ai";
@@ -22,7 +22,7 @@ function Modify() {
   const [ViewData, setViewData] = useState();
   useEffect(() => {
 
-    firebase.database().ref(`work_list/${match.params.uid}`)
+    firebase.database(app2).ref(`work_list/${match.params.uid}`)
     .once("value")
     .then(snapshot => {
       setViewData(snapshot.val())
@@ -83,7 +83,7 @@ function Modify() {
     }
 
     
-    firebase.database().ref(`work_list/${match.params.uid}`)
+    firebase.database(app2).ref(`work_list/${match.params.uid}`)
     .update({
       ...values
     })
@@ -103,7 +103,7 @@ function Modify() {
       desc:values.modify_log
     }
     arr.push(obj);
-    firebase.database().ref(`work_list/${match.params.uid}`)
+    firebase.database(app2).ref(`work_list/${match.params.uid}`)
     .update({
       log:arr
     })

@@ -43,7 +43,7 @@ function Write() {
     const time = new Date().getTime();
     let number;
 
-    await firebase.database()
+    await firebase.database(app2)
     .ref(`work_list_number`)
     .child("count")
     .transaction((pre) => {
@@ -51,7 +51,7 @@ function Write() {
       return pre + 1;
     });
 
-    await firebase.database().ref(`work_list/${uid}`)
+    await firebase.database(app2).ref(`work_list/${uid}`)
     .set({
       ...values,
       number:number,

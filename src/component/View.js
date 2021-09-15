@@ -64,7 +64,7 @@ function View() {
   const [Rerender, setRerender] = useState(false);
 
   useEffect(() => {
-    firebase.database().ref(`work_list/${match.params.uid}`)
+    firebase.database(app2).ref(`work_list/${match.params.uid}`)
     .on("value",snapshot => {
       let replyArr = [];
       let resData = snapshot.val();
@@ -155,6 +155,7 @@ function View() {
           }
         })
         curData.content = rmImgData;
+        curData.og_content = "";
         curData.imgName = imgName ? imgName : "";
 
         axios.post('https://metree.co.kr/_sys/_xml/attr_src.php', {
@@ -166,9 +167,9 @@ function View() {
           console.log(error);
         });
 
-        firebase.database(app2).ref(`work_list/${match.params.uid}`)
+        firebase.database(app2).ref(`work_finish_list/${match.params.uid}`)
         .update({...curData})
-        firebase.database().ref(`work_list/${match.params.uid}`).remove();
+        firebase.database(app2).ref(`work_list/${match.params.uid}`).remove();
         window.alert("완료처리 되었습니다.")
 
         setStatePop(false)        
@@ -176,7 +177,7 @@ function View() {
       }
     }else{
 
-      firebase.database().ref(`work_list/${match.params.uid}`)
+      firebase.database(app2).ref(`work_list/${match.params.uid}`)
       .update({
         state:stateSel.current.value,
         log:arr
@@ -193,7 +194,7 @@ function View() {
   const onDelete = () => {
     const agree = window.confirm("삭제시 복구가 불가능합니다. 삭제하시겠습니까?");
     if(agree){
-      firebase.database().ref(`work_list/${match.params.uid}`).remove()
+      firebase.database(app2).ref(`work_list/${match.params.uid}`).remove()
       window.alert("삭제되었습니다.")
       btnToList.current && btnToList.current.click();
     }
@@ -204,7 +205,7 @@ function View() {
   }
 
   const onLogHidden = (idx) => {
-    firebase.database().ref(`work_list/${match.params.uid}/log/${idx}`)
+    firebase.database(app2).ref(`work_list/${match.params.uid}/log/${idx}`)
     .transaction((pre) => {
       let res = pre;
       res.hidden = res.hidden ? false : true
@@ -213,12 +214,12 @@ function View() {
   }
   const onLogDelete = (idx) => {
     const agree = window.confirm('삭제 하시겠습니까?')
-    agree && firebase.database().ref(`work_list/${match.params.uid}/log/${idx}`).remove()
+    agree && firebase.database(app2).ref(`work_list/${match.params.uid}/log/${idx}`).remove()
   }
 
   const onReplySubmit = (data) => {
     const uid = uuid();
-    firebase.database().ref(`work_list/${match.params.uid}/reply/${uid}`)
+    firebase.database(app2).ref(`work_list/${match.params.uid}/reply/${uid}`)
     .update({
       name:userInfo.displayName,
       part:userInfo.photoURL,
@@ -229,9 +230,9 @@ function View() {
       depth:0,
       timestamp:new Date().getTime()
     })
-    firebase.database().ref(`work_list_reply_count`)
+    firebase.database(app2).ref(`work_list_reply_count`)
     .transaction(pre=>pre+1)
-    firebase.database().ref(`work_list_reply_alarm`)
+    firebase.database(app2).ref(`work_list_reply_alarm`)
     .update({
       alarm:true,
       title:ViewData.title,
