@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import { Button, Table, Radio, Select, Input, Switch } from "antd";
 import * as antIcon from "react-icons/ai";
-import firebase from '../firebase';
+import firebase, {app2} from '../firebase';
 import { OderModalPopup } from './View';
 import { useSelector } from "react-redux";
 import Loading from "./Loading"
@@ -11,7 +11,7 @@ const { Search } = Input;
 
 function MyList() {
   const userInfo = useSelector((state) => state.user.currentUser);
-  const db = firebase.database();
+  const db = firebase.database(app2);
 
   const [WorkList, setWorkList] = useState();
   const [Rerender, setRerender] = useState(false)
