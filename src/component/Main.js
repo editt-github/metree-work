@@ -89,7 +89,14 @@ function Main() {
           let emerCount = 0;
           let finishCount = 0;
 
-          arr.map(el=>{        
+          arr.map(el=>{    
+            //댓글개수
+            let replyCount;
+            if(el.reply){
+              replyCount = Object.keys(el.reply).length
+            }
+            el.replyCount = replyCount ? replyCount : '';
+            
             //긴급개수
             (el.emergency && el.state === "0" || el.emergency && el.state === "4") && emerCount++;     
             //완료개수
@@ -111,6 +118,7 @@ function Main() {
           })    
           setEmerCnt(emerCount)
           setFinishCnt(finishCount)
+          console.log(arr)
           arr = arr.filter(el=>el.hidden != true);
           
 
@@ -145,7 +153,7 @@ function Main() {
           arr.sort((a,b) => {
             return a.index - b.index
           })
-  
+          
           setWorkList(arr)
         })
       }
@@ -299,26 +307,32 @@ function Main() {
     },
     {
       title: '제목',
-      dataIndex: ['title','uid','emergency','type','secret'],
+      dataIndex: ['title','uid','emergency','type','secret','replyCount'],
       key: 'title',
       align: 'left',      
       render: (text,row) => {
         let content;
         if(row["emergency"]){
           content = <Link className="emergency" to={`/view/${row["uid"]}`}>
-            <antIcon.AiOutlineAlert />{row["title"]}</Link>
+            <antIcon.AiOutlineAlert />{row["title"]}
+              {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+            </Link>
           if(row["secret"]){
             content = <Link className="emergency" to={`/view/${row["uid"]}`}>
-            <antIcon.AiOutlineAlert /><antIcon.AiOutlineLock />{row["title"]}</Link>
+            <antIcon.AiOutlineAlert /><antIcon.AiOutlineLock />{row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}</Link>
           }
         }else if(row["type"] === "0"){
-          content = <Link className="emergency notice" to={`/view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}</Link>
+          content = <Link className="emergency notice" to={`/view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}
+          {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}</Link>
         }else if(row["secret"]){
           content = <Link className="secret" to={`/view/${row["uid"]}`}>
-            <antIcon.AiOutlineLock />{row["title"]}</Link>
+            <antIcon.AiOutlineLock />{row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}</Link>
         }else{
-          content = <Link to={`/view/${row["uid"]}`}>{row["title"]}</Link>
-        }
+          content = <Link to={`/view/${row["uid"]}`}>{row["title"]}
+          {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}</Link>
+        }      
         return content
       }
     },

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import '@toast-ui/editor/dist/toastui-editor.css';
 import firebase, {app2} from '../firebase';
 import { Editor } from '@toast-ui/react-editor';
-import { Button, Form, Input, Radio, Select, DatePicker, Checkbox } from 'antd';
+import { Button, Form, Input, Radio, Select, DatePicker, Checkbox, Spin } from 'antd';
 import * as antIcon from "react-icons/ai";
 import { getFormatDate } from './CommonFunc'
 import uuid from "react-uuid";
@@ -24,8 +24,9 @@ function Write() {
     setType(type);
   }
 
+  const [Loading, setLoading] = useState(false)
   const onsubmit = async (values) => {    
-
+    setLoading(true)
     let d_regis = getFormatDate(new Date());
     if(values.project_date){
       let date = [];
@@ -65,7 +66,10 @@ function Write() {
       timestamp:time,
       user_uid:userInfo.uid
     })
-    btnToList.current && btnToList.current.click();
+    .then((data)=>{
+      setLoading(false)
+      btnToList.current && btnToList.current.click();
+    })
   }
   return (
     <>
@@ -165,7 +169,9 @@ function Write() {
           <Button style={{marginRight:"5px"}}>
             <Link ref={btnToList} to="/"><antIcon.AiOutlineBars />목록으로</Link>
           </Button>
-          <Button type="primary" htmlType="submit">확인</Button>
+          <Spin spinning={Loading}>
+            <Button type="primary" htmlType="submit">확인</Button>
+          </Spin>
         </div>
       </Form>
     </>

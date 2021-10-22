@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react'
 import { Button, Input } from 'antd';
 import * as antIcon from "react-icons/ai";
-import firebase from 'firebase';
+import firebase, {app2} from '../firebase';
 const { TextArea } = Input;
 
 function ReplyBox(props) {
@@ -24,14 +24,14 @@ function ReplyBox(props) {
   const replyModify = (uid) => {
     setInputModify(!InputModify);
     setModifyUid(uid);
-    firebase.database().ref(`work_list/${props.ViewData.uid}/reply/${uid}`)
+    firebase.database(app2).ref(`work_list/${props.ViewData.uid}/reply/${uid}`)
     .once("value", data => {
       setModifyData(data.val())
     })
   }
   const modyfySubmit = () => {
      let desc = ModyfyText ? ModyfyText : ModifyData.desc
-     firebase.database().ref(`work_list/${props.ViewData.uid}/reply/${ModifyUid}`)
+     firebase.database(app2).ref(`work_list/${props.ViewData.uid}/reply/${ModifyUid}`)
     .update({
       ...ModifyData,
       desc:desc
@@ -43,7 +43,7 @@ function ReplyBox(props) {
   const replyDel = (uid) => {
     const agree = window.confirm("삭제 하시겠습니까?")
     agree && 
-    firebase.database().ref(`work_list/${props.ViewData.uid}/reply/${uid}`).remove()
+    firebase.database(app2).ref(`work_list/${props.ViewData.uid}/reply/${uid}`).remove()
   }
 
   return (
