@@ -118,7 +118,6 @@ function Main() {
           })    
           setEmerCnt(emerCount)
           setFinishCnt(finishCount)
-          console.log(arr)
           arr = arr.filter(el=>el.hidden != true);
           
 
