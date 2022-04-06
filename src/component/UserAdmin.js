@@ -18,7 +18,7 @@ function UserAdmin() {
     .once("value",snapshot => {
       snapshot.forEach(el=>{
         let obj = {};
-        obj = el.val();
+        obj = el.val();        
         obj.uid = el.key
         arr.push(obj)
       })
@@ -54,6 +54,7 @@ function UserAdmin() {
   }
 
   const onsubmit = (values) => {
+    values.welfare_range = values.welfare_range ? values.welfare_range.join(', ') : '';
     values.role = values.role ? parseInt(values.role) : selUserData.role
     firebase.database().ref(`users/${selUserData.uid}`)
     .update({...values})
@@ -143,7 +144,7 @@ function UserAdmin() {
       dataIndex: 'welfare_range',
       key: 'welfare_range',
       align: 'center',       
-      render: data => data ? `${data.join(', ')}` : ''
+      render: data => data ? data : ''
     },
     {
       title: '관리',
@@ -170,6 +171,7 @@ function UserAdmin() {
   }
 
   const exelDowonload = () => {
+    
     const ws = XLSX.utils.json_to_sheet(UserData);
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb,ws,'Sheet1');
@@ -177,14 +179,15 @@ function UserAdmin() {
   }
 
   const onUpdateData = () => {
-    
     if(uploadData.length > 0){
       uploadData.map(el=>{
         //기본 유저정보
         firebase.database().ref(`users/${el.uid}`).update({
           auth: el.auth ? el.auth : '',
           part: el.part,
-          sosok: el.sosok
+          sosok: el.sosok,
+          welfare_able: el.welfare_able === false ? false : true,
+          welfare_range: el.welfare_range
         })
         //식단체크 유저정보
         firebase.database().ref(`lunch/user/${el.uid}`).update({
@@ -193,6 +196,7 @@ function UserAdmin() {
       })
       message.success('업데이트 완료');
       fileInit();
+      setRerender(!Rerender)
     }else{
       message.error('엑셀을 업로드 해주세요')
     }
@@ -203,7 +207,9 @@ function UserAdmin() {
   }
   return (
     <>
-      <div style={{marginBottom:"10px"}}>sosok참고 : 1 미트리 / 2 푸드킹 / 3 미에르</div>
+      <div style={{marginBottom:"5px"}}>sosok참고 : 1 미트리 / 2 푸드킹 / 3 미에르</div>
+      <div style={{marginBottom:"5px"}}>복지이용(welfare_able) 참고 : TRUE(이용가능) / FALSE(이용불가능)</div>
+      <div style={{marginBottom:"10px"}}>가족복지 대상자(welfare_range) 참고 : 가족복지 대상자 입력. 여러명일 경우 ,(콤마) 후 띄어쓰기</div>
       <div className='flex-box' style={{marginBottom:"10px"}}>
         <Button onClick={exelDowonload}><SiMicrosoftexcel style={{marginRight:"4px",position:"relative",top:"2px",fontSize:"15px"}} />엑셀다운</Button>
         <div style={{marginLeft:"auto"}}>
