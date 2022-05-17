@@ -78,6 +78,13 @@ function View() {
         }
         resData.reply = replyArr
       }
+      if(typeof resData.log === 'object'){
+        let tempArr = [];
+        for(let key in resData.log){
+          tempArr.push(resData.log[key])
+        }
+        resData.log = tempArr;
+      }
       setViewData(resData)
     })
     return () => {

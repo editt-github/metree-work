@@ -220,6 +220,13 @@ function Main() {
   const onStateOver = (e,log) => {
     let posX = e.clientX;
     let posY = e.clientY;
+    if(typeof log === 'object'){
+      let tempArr = [];
+      for(let key in log){
+        tempArr.push(log[key])
+      }
+      log = tempArr;
+    }
     setStateViewTxt(log)
     setStateView(true)
     stateViewPop.current.style.display = "block";

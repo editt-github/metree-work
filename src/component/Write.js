@@ -88,7 +88,9 @@ function Write() {
           >
             <Select placeholder="사이트선택">
               <Option value="미트리">미트리</Option>
-              <Option value="마이오피스">마이오피스</Option>
+              <Option value="미트리 오피스">미트리 오피스</Option>
+              <Option value="미에르">미에르</Option>
+              <Option value="미에르 오피스">미에르 오피스</Option>
               <Option value="마이닭">마이닭</Option>
               <Option value="카페">카페</Option>
               <Option value="기타">기타</Option>
