@@ -8,6 +8,7 @@ import { Select } from 'antd';
 import { useSelector } from "react-redux";
 import { getFormatDate } from './CommonFunc'
 import axios from 'axios';
+import ReplyBox from './ReplyBox';
 const { Option } = Select;
 export const OderModalPopup = styled.div`
   width: auto;
@@ -344,6 +345,9 @@ function FinishView() {
             </Descriptions.Item>
             }
           </Descriptions>
+          {userInfo &&            
+            <ReplyBox ViewData={ViewData} />
+          }
           <div className="view-btn-box">
             <Button>
               <Link ref={btnToList} to="/finish"><antIcon.AiOutlineBars />목록</Link>

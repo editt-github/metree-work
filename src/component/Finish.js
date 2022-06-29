@@ -87,6 +87,13 @@ function Finish() {
           let finishCount = 0;
 
           arr.map(el=>{        
+            //댓글개수
+            let replyCount;
+            if(el.reply){
+              replyCount = Object.keys(el.reply).length
+            }
+            el.replyCount = replyCount ? replyCount : '';
+            
             //긴급개수
             (el.emergency && el.state === "0" || el.state === "4") && emerCount++;     
             //완료개수
@@ -252,18 +259,28 @@ function Finish() {
         let content;
         if(row["emergency"]){
           content = <Link className="emergency" to={`/finish_view/${row["uid"]}`}>
-            <antIcon.AiOutlineAlert />{row["title"]}</Link>
+            <antIcon.AiOutlineAlert />{row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+            </Link>
           if(row["secret"]){
             content = <Link className="emergency" to={`/finish_view/${row["uid"]}`}>
-            <antIcon.AiOutlineAlert /><antIcon.AiOutlineLock />{row["title"]}</Link>
+            <antIcon.AiOutlineAlert /><antIcon.AiOutlineLock />{row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+            </Link>
           }
         }else if(row["type"] === "0"){
-          content = <Link className="emergency notice" to={`/finish_view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}</Link>
+          content = <Link className="emergency notice" to={`/finish_view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+          </Link>
         }else if(row["secret"]){
           content = <Link className="secret" to={`/finish_view/${row["uid"]}`}>
-            <antIcon.AiOutlineLock />{row["title"]}</Link>
+            <antIcon.AiOutlineLock />{row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+            </Link>
         }else{
-          content = <Link to={`/finish_view/${row["uid"]}`}>{row["title"]}</Link>
+          content = <Link to={`/finish_view/${row["uid"]}`}>{row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+          </Link>
         }
         return content
       }

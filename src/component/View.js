@@ -292,7 +292,9 @@ function View() {
                         <option value="3">확인요청</option>
                         <option value="4">수정요청</option>
                         <option value="5">확인완료</option>
-                        <option value="6">완료</option>
+                        {userInfo?.auth.includes('it') &&
+                          <option value="6">완료</option>
+                        }
                       </select>
                       <Input placeholder="기록사항" style={{marginRight:"5px",flex:1}} onChange={onStateInput} />
                     </div>
