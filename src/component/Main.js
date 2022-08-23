@@ -7,6 +7,7 @@ import firebase,{app2} from '../firebase';
 import { OderModalPopup } from './View';
 import { useSelector } from "react-redux";
 import Loading from "./Loading"
+import CategorySelect from './CategorySelect';
 const { Option } = Select;
 const { Search } = Input;
 
@@ -25,6 +26,18 @@ function Main() {
   const onSiteChange = (e) => {
     const val = e.value;
     setSite(val)
+  }
+
+  const [type, setType] = useState("")
+  const onTypeChange = (e) => {
+    const val = e.value;
+    setType(val)
+  }
+
+  const [type2, setType2] = useState("")
+  const onTypeChange2 = (e) => {
+    const val = e.value;
+    setType(val)
   }
 
   const [SearchType, setSearchType] = useState("1")
@@ -74,7 +87,6 @@ function Main() {
                 searchArr.push(value)
               }
             }
-            
             arr.push(value)        
             
           });
@@ -88,6 +100,20 @@ function Main() {
 
           let emerCount = 0;
           let finishCount = 0;
+
+          // 유형1 필터
+          if(type){
+            arr = arr.filter(el=> {
+              return el.type == type
+            })
+          }
+
+          //유형2 필터
+          if(type2){
+            arr = arr.filter(el=> {
+              return el.basic_type == type2
+            })
+          }
 
           arr.map(el=>{    
             //댓글개수
@@ -152,14 +178,13 @@ function Main() {
           arr.sort((a,b) => {
             return a.index - b.index
           })
-          console.log(arr)
           setWorkList(arr)
         })
       }
 
     return () => {
     }
-  }, [Sort,Site,SearchKey,userInfo])
+  }, [Sort,Site,type,SearchKey,userInfo])
 
 
   const [ReplyCount, setReplyCount] = useState()
@@ -218,8 +243,8 @@ function Main() {
   const [StateView, setStateView] = useState(false)
   const [StateViewTxt, setStateViewTxt] = useState()
   const onStateOver = (e,log) => {
-    let posX = e.clientX;
-    let posY = e.clientY;
+    let posX = e.pageX;
+    let posY = e.pageY;
     if(typeof log === 'object'){
       let tempArr = [];
       for(let key in log){
@@ -374,32 +399,7 @@ function Main() {
     <>
     {WorkList ? (
         <>
-          <div className="flex-box wrap" style={{marginBottom:"15px"}}>
-            <div className="list-top-filter">
-              <Select
-                labelInValue
-                placeholder="사이트선택"
-                onChange={onSiteChange}
-              >
-                <Option value="">전체</Option>
-                <Option value="미트리">미트리</Option>
-                <Option value="마이오피스">마이오피스</Option>
-                <Option value="마이닭">마이닭</Option>
-                <Option value="카페">카페</Option>
-                <Option value="기타">기타</Option>
-              </Select>            
-            </div>          
-            <Radio.Group className="top-state-radio" onChange={onSortChange} defaultValue={Sort} style={{marginRight:"10px"}}>
-              <Radio.Button value="">전체</Radio.Button>
-              <Radio.Button value="8">대기+접수+진행</Radio.Button>
-              <Radio.Button value="0">대기</Radio.Button>
-              <Radio.Button value="1">접수</Radio.Button>
-              <Radio.Button value="2">진행</Radio.Button>
-              <Radio.Button value="3">확인요청</Radio.Button>
-              <Radio.Button value="4">수정요청</Radio.Button>
-              <Radio.Button value="5">확인완료</Radio.Button>
-            </Radio.Group>            
-          </div>
+          <CategorySelect onSiteChange={onSiteChange} Sort={Sort} onSortChange={onSortChange} onTypeChange={onTypeChange} onTypeChange2={onTypeChange2} />
           <Table 
           className="list-table"
           rowKey={ item => { return item.uid } }

@@ -138,6 +138,7 @@ function Modify() {
                 <Radio.Button value="0">공지</Radio.Button >
               }
               <Radio.Button value="1">일반</Radio.Button >
+              <Radio.Button value="3">CS</Radio.Button >
               <Radio.Button value="2">프로젝트</Radio.Button >
             </Radio.Group>
           </Form.Item>
@@ -161,6 +162,7 @@ function Modify() {
                 <Select placeholder="유형선택">
                   <Option value="1">오류</Option>
                   <Option value="2">수정/추가</Option>
+                  <Option value="3">문의</Option>
                 </Select>
               </Form.Item>
               <Form.Item 
