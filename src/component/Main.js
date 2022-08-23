@@ -152,7 +152,7 @@ function Main() {
           arr.sort((a,b) => {
             return a.index - b.index
           })
-          
+          console.log(arr)
           setWorkList(arr)
         })
       }

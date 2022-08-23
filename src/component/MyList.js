@@ -71,7 +71,6 @@ function MyList() {
                   searchArr.push(value)
                 }
               }
-              
               arr.push(value)        
               
             });
@@ -82,7 +81,15 @@ function MyList() {
             if(SearchKey){
               arr = searchArr
             }
-            arr.map(el=>{        
+            arr.map(el=>{      
+              
+              //댓글개수
+              let replyCount;
+              if(el.reply){
+                replyCount = Object.keys(el.reply).length
+              }
+              el.replyCount = replyCount ? replyCount : '';
+
               //공지사항,긴급 정렬순서
               if(el.type === "0"){
                 el.index = 0;
@@ -128,7 +135,6 @@ function MyList() {
             arr.sort((a,b) => {
               return a.index - b.index
             })
-    
             setWorkList(arr)
           })
       }
@@ -237,15 +243,23 @@ function MyList() {
             <antIcon.AiOutlineAlert />{row["title"]}</Link>
           if(row["secret"]){
             content = <Link className="emergency" to={`/view/${row["uid"]}`}>
-            <antIcon.AiOutlineAlert /><antIcon.AiOutlineLock />{row["title"]}</Link>
+            <antIcon.AiOutlineAlert /><antIcon.AiOutlineLock />{row["title"]}
+              {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+            </Link>
           }
         }else if(row["type"] === "0"){
-          content = <Link className="emergency notice" to={`/view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}</Link>
+          content = <Link className="emergency notice" to={`/view/${row["uid"]}`}><antIcon.AiOutlineNotification />[공지] {row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+          </Link>
         }else if(row["secret"]){
           content = <Link className="secret" to={`/view/${row["uid"]}`}>
-            <antIcon.AiOutlineLock />{row["title"]}</Link>
+            <antIcon.AiOutlineLock />{row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+            </Link>
         }else{
-          content = <Link to={`/view/${row["uid"]}`}>{row["title"]}</Link>
+          content = <Link to={`/view/${row["uid"]}`}>{row["title"]}
+            {row["replyCount"] > 0 ? `(${row["replyCount"]})` : ''}
+          </Link>
         }
         return content
       }
