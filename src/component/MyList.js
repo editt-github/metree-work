@@ -328,6 +328,7 @@ function MyList() {
           <CategorySelect onSiteChange={onSiteChange} Sort={Sort} onSortChange={onSortChange} onTypeChange={onTypeChange} onTypeChange2={onTypeChange2} type={'my'} />
           <Table 
           className="list-table"
+          showSorterTooltip={false}
           rowKey={ item => { return item.uid } }
           pagination={{
             pageSize:15,

@@ -403,6 +403,7 @@ function Main() {
           <Table 
           className="list-table"
           rowKey={ item => { return item.uid } }
+          showSorterTooltip={false}
           pagination={{
             pageSize:15,
             position:"bottomCenter"
