@@ -19,7 +19,10 @@ export const app2 = firebase.initializeApp({
   appId: "1:676427099091:web:d1c93650bc273a611f5d26",
   measurementId: "G-GFLFJCZFF1"
 }, 'app2');
-
+export const wel = firebase.initializeApp({
+  ...firebaseConfig,
+  databaseURL: "https://metree-welfare.firebaseio.com/"
+}, 'wel');
 //firebase.analytics();
 
 export default firebase;

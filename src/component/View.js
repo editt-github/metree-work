@@ -343,7 +343,14 @@ function View() {
                     }
                   </Descriptions.Item>
                   <Descriptions.Item label="기간">
-                    {ViewData.project_date[0].full_} ~ {ViewData.project_date[1].full_}
+                    {ViewData.project_date ? (
+                      <>
+                        {ViewData.project_date[0].full_} ~ {ViewData.project_date[1].full_}
+                      </>
+                    ) : (
+                      '미정'
+                    )
+                    }
                   </Descriptions.Item>
                 </>
               ) : 

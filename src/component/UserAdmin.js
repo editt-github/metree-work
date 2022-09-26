@@ -1,21 +1,23 @@
 import React, { useState, useEffect, useRef} from 'react'
 import { useSelector } from "react-redux";
-import firebase from '../firebase';
+import firebase, {wel} from '../firebase';
 import { Button, Input, Form, Table, message,Select, Checkbox, Switch } from "antd";
 import { OderModalPopup } from './View';
 import * as XLSX from 'xlsx/xlsx.mjs';
 import { SiMicrosoftexcel } from "react-icons/si";
 const { Option } = Select;
+const { Search } = Input;
 
 function UserAdmin() {
   const userInfo = useSelector((state) => state.user.currentUser);   
   const [Rerender, setRerender] = useState(false)
   const [UserData, setUserData] = useState();
   const fileRef = useRef();
+  const welDb = firebase.database(wel);
   useEffect(() => {
     let arr = [];
     firebase.database().ref('users')
-    .once("value",snapshot => {
+    .on("value",snapshot => {
       snapshot.forEach(el=>{
         let obj = {};
         obj = el.val();        
@@ -48,6 +50,17 @@ function UserAdmin() {
       setmodifyPop(true)
     })
   }
+
+  const onUserDelete = (name,email,uid) => {
+    const agree = window.confirm(`${name}(${email})계정을 삭제하시겠습니까?`)
+    if(agree){
+      firebase.database().ref(`users/${uid}`).remove();
+      firebase.database().ref(`hair/${uid}`).remove();
+      firebase.database().ref(`lunch/user/${uid}`).remove();
+      welDb.ref(`chir/user/${uid}`).remove();
+      setRerender(!Rerender)
+    }
+  }  
 
   const onClosePop = () => {
     setmodifyPop(false)
@@ -148,10 +161,10 @@ function UserAdmin() {
     },
     {
       title: '관리',
-      dataIndex: 'uid',
+      dataIndex: ['name','email','uid'],
       key: 'uid',
       align: 'center',     
-      render: data => data ? <Button onClick={(e)=>onUserModify(e,data)}>수정</Button> : ""
+      render: (text,row) => row['uid'] ? <><Button onClick={(e)=>onUserModify(e,row['uid'])}>수정</Button><Button onClick={(e)=>onUserDelete(row['name'],row['email'],row['uid'])}>삭제</Button></> : ""
     },
   ]  
 
@@ -205,6 +218,26 @@ function UserAdmin() {
     fileRef.current.value = '';
     setUploadData([]);
   }
+
+  const [partSelect, setPartSelect] = useState()
+  useEffect(() => {
+    firebase.database().ref(`part_setting`)
+    .on("value",snapshot => {
+      setPartSelect(snapshot.val())
+    })
+    return () => {
+      firebase.database().ref('part_setting').off()
+    }
+  }, [])
+  
+  const onPartSubmit = (e) => {
+    let values = e.split(',')
+    firebase.database().ref('part_setting')
+    .set({...values})
+    .then(()=>{
+      message.success('업데이트 완료되었습니다.')
+    })
+  }
   return (
     <>
       <div style={{marginBottom:"5px"}}>sosok참고 : 1 미트리 / 2 푸드킹 / 3 미에르</div>
@@ -218,6 +251,30 @@ function UserAdmin() {
           <Button onClick={onUpdateData}><SiMicrosoftexcel style={{marginRight:"4px",position:"relative",top:"2px",fontSize:"15px"}} />엑셀적용</Button>
         </div>
       </div>
+      
+      {partSelect && partSelect.length > 0 ? (
+        <>
+        <Search 
+          placeholder='부서입력 ,(콤마) 로 구분해주세요.'
+          type="text"
+          size="large"
+          style={{marginBottom:"10px"}} 
+          enterButton="적용"
+          defaultValue={partSelect.join(',')}
+          onSearch={onPartSubmit}
+        />
+        </>
+      ) : (
+        <Search 
+          placeholder='부서입력 ,(콤마) 로 구분해주세요.'
+          type="text"
+          size="large"
+          style={{marginBottom:"10px"}} 
+          enterButton="적용"
+          onSearch={onPartSubmit}
+        />
+      )}
+
       {UserData &&
       <>
         <Table
@@ -266,16 +323,10 @@ function UserAdmin() {
                   <Option value="photoUrl" disabled hidden>
                     부서
                   </Option>
-                  <Option value="총괄">총괄</Option>
-                  <Option value="R&D운영본부">R&D운영본부</Option>
-                  <Option value="영업지원본부">영업지원본부</Option>
-                  <Option value="총괄기획본부">총괄기획본부</Option>
-                  <Option value="IT개발본부">IT개발본부</Option>
-                  <Option value="온라인사업본부">온라인사업본부</Option>
-                  <Option value="경영관리본부">경영관리본부</Option>
-                  <Option value="문화사업본부">문화사업본부</Option>
-                  <Option value="푸드킹">푸드킹</Option>
-                  <Option value="미에르">미에르</Option>
+                  {partSelect && partSelect.map((el,idx)=>(
+                    <Option key={idx} value={el}>{el}</Option>
+                  )
+                  )}
                 </Select>
               </Form.Item>
               <Form.Item name="welfare_range" label="복지" style={{marginBottom:"10px"}}>
