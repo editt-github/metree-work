@@ -52,6 +52,7 @@ function Write() {
       return pre + 1;
     });
 
+
     await firebase.database(app2).ref(`work_list/${uid}`)
     .set({
       ...values,
