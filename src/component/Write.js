@@ -35,7 +35,12 @@ function Write() {
 
   const [Loading, setLoading] = useState(false);
   const onsubmit = async (values) => {
-    console.log(values);
+    if (new Date().getHours() >= 9) {
+      let checkTime = window.confirm(
+        "오후 5시 이후에 등록된 게시물은 당일 처리되지 않을 수 있습니다."
+      );
+      if (!checkTime) return;
+    }
     if (!values.csCheck) {
       message.error("타부서 협의사항을 선택해 주세요");
       return;
@@ -216,6 +221,9 @@ function Write() {
               <Input placeholder="담당자명" />
             </Form.Item>
           )}
+        </div>
+        <div style={{ color: "red", marginBottom: "15px", fontWeight: "600" }}>
+          * 오후 5시 이전에 등록된 게시물까지 확인 후 당일처리 가능합니다.
         </div>
         <Editor
           previewStyle="vertical"
