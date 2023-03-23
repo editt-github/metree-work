@@ -15,7 +15,7 @@ import {
   message,
 } from "antd";
 import * as antIcon from "react-icons/ai";
-import { getFormatDate } from "./CommonFunc";
+import { getFormatDate, kakaoSend } from "./CommonFunc";
 import uuid from "react-uuid";
 import moment from "moment";
 import { useSelector } from "react-redux";
@@ -96,6 +96,12 @@ function Write() {
         setLoading(false);
         btnToList.current && btnToList.current.click();
       });
+
+    kakaoSend({
+      ...values,
+      name: userInfo.displayName,
+      part: userInfo.photoURL,
+    });
   };
 
   const [csCheck, setCsCheck] = useState();
