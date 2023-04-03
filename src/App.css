@@ -356,7 +356,8 @@ select {
   font-weight: bold;
   border-radius: 3px; }
 
-.board-basic.research li .state.con.yet span, .board-basic.research li .state.con.end span {
+.board-basic.research li .state.con.yet span,
+.board-basic.research li .state.con.end span {
   background-color: #666; }
 
 .board-basic.research li .ant-btn {
@@ -396,7 +397,8 @@ select {
   margin: 5px 0; }
 
 @media (max-width: 760px) {
-  .board-view-basic dt, .board-view-basic dd {
+  .board-view-basic dt,
+  .board-view-basic dd {
     padding: 10px; }
   .board-view-basic .flex-box {
     flex-direction: column; } }
@@ -713,14 +715,16 @@ select {
   flex: 1;
   max-width: 400px; }
 
-button a, button span {
+button a,
+button span {
   display: flex;
   justify-content: center;
   align-items: center;
   flex-direction: row;
   font-size: 13px; }
 
-button a svg, button span svg {
+button a svg,
+button span svg {
   margin-right: 4px;
   font-size: 14px; }
 
@@ -770,7 +774,9 @@ button a svg, button span svg {
   height: 18px; }
 
 .list-table .emergency.notice {
-  color: #03aa4e; }
+  color: #03aa4e;
+  flex-shrink: 0;
+  display: block; }
 
 .list-table .secret {
   display: flex;
