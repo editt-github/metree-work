@@ -6,7 +6,7 @@ import * as antIcon from "react-icons/ai";
 import styled from "styled-components";
 import { Select } from "antd";
 import { useSelector } from "react-redux";
-import { getFormatDate } from "./CommonFunc";
+import { getFormatDate, kakaoSend } from "./CommonFunc";
 import ReplyBox from "./ReplyBox";
 import axios from "axios";
 import uuid from "react-uuid";
@@ -134,6 +134,45 @@ function View() {
   };
 
   const onStateModify = () => {
+    if (StateSelect === "4") {
+      const sender = ViewData.log?.find((el) => {
+        return el.state == "3";
+      });
+      sender &&
+        firebase
+          .database()
+          .ref(`users/${sender.user_uid}`)
+          .child("call_number")
+          .once("value", (data) => {
+            console.log(data.val());
+            kakaoSend(
+              {
+                type: "confirm",
+                call_num: data.val(),
+                title: ViewData.title,
+                name: ViewData.name,
+              },
+              "confirm"
+            );
+          });
+    }
+    if (StateSelect === "3") {
+      firebase
+        .database()
+        .ref(`users/${ViewData.user_uid}`)
+        .child("call_number")
+        .once("value", (data) => {
+          kakaoSend(
+            {
+              type: "confirm",
+              call_num: data.val(),
+              title: ViewData.title,
+              name: ViewData.name,
+            },
+            "confirm"
+          );
+        });
+    }
     let arr = [];
     let obj = {};
     if (ViewData.log) {
@@ -149,6 +188,7 @@ function View() {
       desc: StateInput ? StateInput : "",
       hidden: false,
       uid: logUid,
+      user_uid: userInfo.uid,
     };
     //arr.push(obj);
     const stateNum = stateSel.current.value;
@@ -238,7 +278,12 @@ function View() {
       });
   };
   const onLogDelete = (uid) => {
-    const lastState = ViewData.log[ViewData.log.length - 2].state;
+    let lastState;
+    if (ViewData.log.length > 2) {
+      lastState = ViewData.log[ViewData.log.length - 2].state;
+    } else {
+      lastState = "0";
+    }
     const agree = window.confirm("삭제 하시겠습니까?");
     if (agree) {
       firebase

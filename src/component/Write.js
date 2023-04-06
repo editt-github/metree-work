@@ -35,7 +35,7 @@ function Write() {
 
   const [Loading, setLoading] = useState(false);
   const onsubmit = async (values) => {
-    if (new Date().getHours() >= 9) {
+    if (new Date().getHours() >= 17) {
       let checkTime = window.confirm(
         "오후 5시 이후에 등록된 게시물은 당일 처리되지 않을 수 있습니다."
       );

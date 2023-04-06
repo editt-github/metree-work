@@ -59,15 +59,27 @@ export function notify(msg) {
 }
 
 //카카오톡 알림
-export const kakaoSend = (data) => {
-  console.log(data);
-  let url =
-    "https://metree.co.kr/_sys/_xml/order_kakao.php?work_title=" +
-    data.title +
-    "&work_name=" +
-    data.name +
-    "&work_part=" +
-    data.part;
+export const kakaoSend = (data, state) => {
+  let url;
+  if (state === "confirm") {
+    url =
+      "https://metree.co.kr/_sys/_xml/order_kakao.php?call_num=" +
+      data.call_num +
+      "&work_name=" +
+      data.name +
+      "&title=" +
+      data.title +
+      "&type=" +
+      data.type;
+  } else {
+    url =
+      "https://metree.co.kr/_sys/_xml/order_kakao.php?work_title=" +
+      data.title +
+      "&work_name=" +
+      data.name +
+      "&work_part=" +
+      data.part;
+  }
   fetch(url, {
     mode: "no-cors",
   })
